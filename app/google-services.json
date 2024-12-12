@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "875328587460",
+    "project_id": "vivamurcia-e054b",
+    "storage_bucket": "vivamurcia-e054b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:875328587460:android:4a5bed7737a1899846ab91",
+        "android_client_info": {
+          "package_name": "com.example.vivemurcia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "875328587460-2836t7ufmur0tvg5fgloeaj316h9maq4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.vivemurcia",
+            "certificate_hash": "859650141224e6eb29abb96046d2f9e0ee253315"
+          }
+        },
+        {
+          "client_id": "875328587460-4ej3u2iekmqi36c9nkgb391obnjmnqam.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCT1SuwonSEcQQ0TwDd-odlD0Tza3tZH28"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "875328587460-4ej3u2iekmqi36c9nkgb391obnjmnqam.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
