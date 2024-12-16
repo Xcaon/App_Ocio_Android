@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("org.jetbrains.kotlin.kapt")
     id("com.google.gms.google-services")
+    id("com.google.dagger.hilt.android")
+    id("kotlin-kapt")
 }
 
 android {
@@ -44,21 +46,28 @@ android {
 
 dependencies {
 
-    implementation("androidx.navigation:navigation-compose:2.8.4")
-
-    // Iconos svg
-    implementation("io.coil-kt:coil-compose:2.4.0")
-    
-    // Dagger Hilt
-    implementation (libs.hilt.android)
-    kapt("com.google.dagger:hilt-compiler:2.44")
-
-
+    // FireStore
+    implementation("com.google.firebase:firebase-firestore-ktx")
     //Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
     implementation(libs.firebase.auth.ktx)
     implementation("com.google.android.gms:play-services-auth:21.2.0")
     implementation("com.google.firebase:firebase-analytics")
+    /* */
+
+    // Dagger Hilt
+    implementation("com.google.dagger:hilt-android:2.48")
+    kapt("com.google.dagger:hilt-android-compiler:2.48")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
+    implementation("androidx.navigation:navigation-compose:2.8.5")
+    // Iconos svg
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
+    // Dagger Hilt
+//    implementation (libs.hilt.android)
+//    kapt("com.google.dagger:hilt-compiler:2.44")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

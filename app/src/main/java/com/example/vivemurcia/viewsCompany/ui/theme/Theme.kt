@@ -1,4 +1,4 @@
-package com.example.vivemurcia.views.info.ui.theme
+package com.example.vivemurcia.viewsCompany.ui.theme
 
 import android.app.Activity
 import android.os.Build

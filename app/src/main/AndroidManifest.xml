@@ -2,7 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
+        android:name=".data.firebase.MyApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -13,7 +16,12 @@
         android:theme="@style/Theme.Vivemurcia"
         tools:targetApi="31">
         <activity
-            android:name=".views.info.InfoView"
+            android:name=".viewsCompany.createActivity.CrearActividad"
+            android:exported="false"
+            android:label="@string/title_activity_create"
+            android:theme="@style/Theme.Vivemurcia" />
+        <activity
+            android:name=".viewsUser.info.InfoView"
             android:exported="false"
             android:label="@string/title_activity_info_view"
             android:theme="@style/Theme.Vivemurcia" />

@@ -47,4 +47,6 @@
     <string name="title_activity_reservas_view">ReservasView</string>
     <string name="title_activity_notificaciones_view">notificacionesView</string>
     <string name="title_activity_info_view">InfoView</string>
+    <string name="title_activity_create">CreateActivity</string>
+    <string name="title_activity_main">MainActivity</string>
 </resources>
