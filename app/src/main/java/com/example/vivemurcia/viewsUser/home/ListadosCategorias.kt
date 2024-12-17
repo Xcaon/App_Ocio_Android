@@ -46,29 +46,13 @@ import kotlinx.coroutines.delay
 @Composable
 fun ListadoAventuras() {
 
-    var isLoading by remember { mutableStateOf(true) }
-    val circularProgressIndicatorLoader = remember {
-        @Composable { CircularProgressIndicatorLoader() }
-    }
-
     val homeViewModel: HomeViewModel = hiltViewModel<HomeViewModel>()
-    val actividades: List<Actividad> = homeViewModel.actividades.collectAsState().value
 
+    // Obtenemos las actividades de Firestore
+    val actividades: List<Actividad> by homeViewModel.actividades.collectAsState()
 
-    if (isLoading) {
-        circularProgressIndicatorLoader()
-
-        // Ejecuto la actualizacion de la lista manualmente
-        LaunchedEffect(Unit) {
-            homeViewModel.getActividades()
-        }
-
-        LazyVerticalGrid(columns = GridCells.Fixed(2), content = {
-            items(actividades) {
-                ActividadCard(it)
-            }
-        })
-        isLoading = false
+    if (actividades.isEmpty()) {
+        CircularProgressIndicatorLoader()
     } else {
         LazyVerticalGrid(columns = GridCells.Fixed(2), content = {
             items(actividades) {
@@ -76,7 +60,6 @@ fun ListadoAventuras() {
             }
         })
     }
-
 }
 
 @Composable

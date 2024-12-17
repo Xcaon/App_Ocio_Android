@@ -20,19 +20,21 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-
     // MutableLiveData: Permite actualizar el valor de la lista de actividades
-    private val _actividades = MutableStateFlow<List<Actividad>>(emptyList())
+    private val _actividades = MutableStateFlow<List<Actividad>>(getActividades())
 
     //LiveData: Permite que otros componentes observen los cambios en la lista de actividades sin tener acceso directo para modificarla
     val actividades: StateFlow<List<Actividad>> = _actividades.asStateFlow()
 
-    fun getActividades() {
+    fun getActividades() : List<Actividad> {
+
+        var nuevasActividades = emptyList<Actividad>()
         viewModelScope.launch {
             try {
-                val nuevasActividades = fireStoreModel.getAveturasCollection()
+                 nuevasActividades = fireStoreModel.getAveturasCollection()
 
                 _actividades.value = nuevasActividades
+
             } catch (e: Exception) {
                 Log.i(
                     "fernando",
@@ -40,6 +42,7 @@ class HomeViewModel @Inject constructor(
                 )
             }
         }
+        return nuevasActividades
     }
 
 }

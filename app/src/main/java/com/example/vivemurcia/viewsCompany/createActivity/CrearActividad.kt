@@ -12,7 +12,7 @@ class CrearActividad : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             VivemurciaTheme {
-
+                InicioCrearActividad()
             }
         }
     }
