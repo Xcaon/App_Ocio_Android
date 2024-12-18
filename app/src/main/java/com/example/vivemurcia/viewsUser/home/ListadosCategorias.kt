@@ -79,9 +79,9 @@ fun ActividadCard(actividad: Actividad) {
 
 
         // Titulo de la actividad
-        Row(modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 4.dp)) { Text(text = actividad.titulo!!) }
+        Row(modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 4.dp)) { Text(text = actividad.tituloActividad!!) }
 
-        var fechaDia = Calendario.getDayOfMonth(actividad.horario!!.toDate())
+        var fechaDia = Calendario.getDayOfMonth(actividad.fechaHoraActividad!!.toDate())
 
         // Fecha de la actividad
         Row(modifier = Modifier.padding(4.dp, 8.dp, 8.dp, 8.dp)) { Text(text = "Día $fechaDia") }

@@ -5,7 +5,7 @@ import com.google.firebase.Timestamp
 
 data class ActividadResponse(
     val idActividad: Int? = null,
-    val ImagenActividad: String? = null,
+    val imagenActividad: String? = null,
     val tituloActividad: String? = null,
     val fechaHoraActividad: Timestamp? = null,
     val descripcionActividad: String? = null,
@@ -18,10 +18,16 @@ data class ActividadResponse(
 {
     fun toDomain(): Actividad {
         return Actividad(
-            id = idActividad,
-            imagen = ImagenActividad,
-            titulo = tituloActividad,
-            horario = fechaHoraActividad,
+            idActividad = idActividad,
+            imagenActividad = imagenActividad,
+            tituloActividad = tituloActividad,
+            fechaHoraActividad = null,
+            ambienteActividad = null,
+            categoriaActividad = null,
+            descripcionActividad = null,
+            localizacionActividad = null,
+            tipoDeGrupo = null,
+            ubicacionActividad = null,
         )
     }
 }

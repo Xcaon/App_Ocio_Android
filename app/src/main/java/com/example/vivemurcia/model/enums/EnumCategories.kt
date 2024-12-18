@@ -1,6 +1,6 @@
 package com.example.vivemurcia.model.enums
 
-enum class enumCategorias(val nombre: String){
+enum class EnumCategories(val nombre: String){
     AVENTURAS("Aventuras"),
     COCINA("Cocina"),
     RELAX("Relax"),

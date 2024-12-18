@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.vivemurcia.R
 import com.example.vivemurcia.model.dataClass.TabItem
-import com.example.vivemurcia.model.enums.enumCategorias
+import com.example.vivemurcia.model.enums.EnumCategories
 import com.example.vivemurcia.ui.theme.fondoPantalla
 
 
@@ -80,10 +80,10 @@ fun InicioHome() {
 fun CategoriasTab(selectedTabIndexActual: Int, selectedTabIndexUpdate: (Int) -> Unit) {
 
     val tabs = listOf(
-        TabItem(enumCategorias.AVENTURAS.nombre, R.drawable.atle),
-        TabItem(enumCategorias.COCINA.nombre, R.drawable.cocina),
-        TabItem(enumCategorias.RELAX.nombre, R.drawable.relax),
-        TabItem(enumCategorias.ARTE.nombre, R.drawable.arte)
+        TabItem(EnumCategories.AVENTURAS.nombre, R.drawable.atle),
+        TabItem(EnumCategories.COCINA.nombre, R.drawable.cocina),
+        TabItem(EnumCategories.RELAX.nombre, R.drawable.relax),
+        TabItem(EnumCategories.ARTE.nombre, R.drawable.arte)
     )
 
     Column {
