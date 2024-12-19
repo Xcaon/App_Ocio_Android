@@ -25,15 +25,26 @@ class FireStoreModel @Inject constructor(
 
         return try {
             firestore.collection(COLLECTION_ACTIVIDADES)
-                .get(Source.CACHE) // Use Source.CACHE to retrieve from cache
+                .get() // Use Source.CACHE to retrieve from cache
                 .await()
                 .map { actividad -> actividad.toObject(ActividadResponse::class.java).toDomain() }
         } catch (e: Exception) {
-            // Handle cache miss (e.g., retrieve from server)
-            Log.i("fernando", "Error al obtener las actividades de Firestore: ${e.message}")
+            // Handle cache miss
+            Log.wtf("fernando", "Error al obtener las actividades de Firestore: ${e.message}")
             emptyList() // Return an empty list if cache is empty
         }
 
+    }
+
+    // Subir actividad
+    suspend fun subirActividad(actividad: Actividad): Boolean {
+       return try {
+           firestore.collection(COLLECTION_ACTIVIDADES).add(actividad).await()
+            true
+       } catch (e: Exception) {
+           Log.e("fernando", "Error al subir la actividad a Firestore: ${e.message}")
+           false
+       }
     }
 
 

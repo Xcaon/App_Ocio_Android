@@ -46,6 +46,14 @@ android {
 
 dependencies {
 
+    // Coil
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
+    // Glide
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+    implementation("com.github.skydoves:landscapist-glide:2.2.5")
+
     // FireStore
     implementation("com.google.firebase:firebase-firestore-ktx")
     //Firebase
@@ -53,6 +61,8 @@ dependencies {
     implementation(libs.firebase.auth.ktx)
     implementation("com.google.android.gms:play-services-auth:21.2.0")
     implementation("com.google.firebase:firebase-analytics")
+    // Storage
+    implementation("com.google.firebase:firebase-storage")
     /* */
 
     // Dagger Hilt

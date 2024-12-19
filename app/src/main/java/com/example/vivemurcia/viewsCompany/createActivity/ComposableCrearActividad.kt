@@ -1,7 +1,12 @@
 package com.example.vivemurcia.viewsCompany.createActivity
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
+import android.provider.MediaStore
 import android.util.Log
-import androidx.compose.foundation.Image
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -39,20 +45,26 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.example.vivemurcia.R
 import com.example.vivemurcia.model.clases.Actividad
 import com.example.vivemurcia.model.enums.EnumAmbiente
 import com.example.vivemurcia.model.enums.EnumCategories
 import com.example.vivemurcia.model.enums.EnumGrupos
 import com.example.vivemurcia.ui.theme.fondoPantalla
+import com.example.vivemurcia.views.home.HomeViewModel
 import com.example.vivemurcia.viewsCompany.ui.theme.botonNaranja
 import com.google.firebase.Timestamp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import okhttp3.Dispatcher
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -70,7 +82,7 @@ fun InicioCrearActividad() {
         // Gestionar los valores del formulario
         var tituloServicio: MutableState<String> = remember { mutableStateOf("") }
         var descripcionServicio: MutableState<String> = remember { mutableStateOf("") }
-//        var fechaServicio = remember { mutableStateOf("") } // TODO()
+//        var fechaServicio = remember { mutableStateOf("") } // null
         var categoriaActividad: MutableState<EnumCategories> =
             remember { mutableStateOf(EnumCategories.AVENTURAS) }
         var localizacionActividad: MutableState<String> = remember { mutableStateOf("") }
@@ -81,10 +93,14 @@ fun InicioCrearActividad() {
 
         // Gestion de errores
         var nombreError by remember { mutableStateOf(true) }
+        var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
 
+        val creador: CreaActividadViewModel = hiltViewModel<CreaActividadViewModel>()
 
         // Vistas Compose
-        Imagen() // TODO()
+        Imagen() { uri ->
+            selectedImageUri = uri
+        }
         NombreTitulo(tituloServicio, nombreError)
         DescripcionServicio(descripcionServicio)
         FechaServicio() // Hay que ver como hacerlo con la fecha
@@ -96,29 +112,55 @@ fun InicioCrearActividad() {
         TipoDeGrupo { tipoDeGrupo.value = it }
         AmbienteServicio {
             ambienteActividad.value = it
-            Log.i("fernando", "Se ha guardado el ambiente $it")
+//            Log.i("fernando", "Se ha guardado el ambiente $it")
         }
         ReservasServicio()
 
+        var actividadCreada: Actividad = Actividad(
+            idActividad = null,
+            idEmpresa = null,
+            tituloActividad = null,
+            fechaHoraActividad = null,
+            ambienteActividad = null,
+            categoriaActividad = null,
+            descripcionActividad = null,
+            localizacionActividad = null,
+            tipoDeGrupo = null,
+            ubicacionActividad = null
+        )
         // Guardar opciones del formulario
         BotonesCrearActividad {
-            var crearActividad = Actividad(
+             actividadCreada = Actividad(
                 idActividad = null,
-                imagenActividad = null, // de momento cogemos el por defecto
                 tituloActividad = tituloServicio.value,
-                fechaHoraActividad = Timestamp.now(),
+                fechaHoraActividad = Timestamp.now(), // Temporal
                 ambienteActividad = ambienteActividad.value,
                 categoriaActividad = categoriaActividad.value,
                 descripcionActividad = descripcionServicio.value,
                 localizacionActividad = localizacionActividad.value,
                 tipoDeGrupo = tipoDeGrupo.value,
-                ubicacionActividad = ubicacionServicio.value
+                ubicacionActividad = ubicacionServicio.value,
+                idEmpresa = "ejemplo"
             )
-            Log.i("fernando", "Se ha guardado la actividad $crearActividad")
-//          creaActividadModel()
+
+            CoroutineScope(Dispatchers.IO).launch {
+                creador.crearActividad(actividadCreada) {estadoSubido  ->
+                    if (estadoSubido) {
+                        Log.d("fernando", "Se ha guardado la actividad $actividadCreada")
+                    } else {
+                        Log.d("fernando", "No se ha guardado la actividad $actividadCreada")
+                    }
+                }
+                // Subir Imagen
+                creador.subirImagenUri(idEmpresa = actividadCreada.idEmpresa.toString(), uri = selectedImageUri!!, tituloActividad = tituloServicio.value)
+
+            }
+
+
         }
     }
 }
+
 
 @Composable
 fun Espaciado(espaciado: Int = 16) {
@@ -405,10 +447,12 @@ fun FechaServicio() {
 fun DescripcionServicio(descripcionServicio: MutableState<String>) {
     Text("Descripción", fontSize = 20.sp, fontWeight = FontWeight.Bold)
     OutlinedTextField(
-        value = "",
+        value = descripcionServicio.value,
         onValueChange = { value -> descripcionServicio.value = value },
         label = { Text(text = "Introduce en que consiste la actividad que se va a realizar.") },
-        modifier = Modifier.fillMaxWidth().height(100.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp)
     )
     Espaciado(32)
 }
@@ -417,10 +461,10 @@ fun DescripcionServicio(descripcionServicio: MutableState<String>) {
 fun NombreTitulo(tituloServicio: MutableState<String>, nombreError: Boolean) {
     Text("Nombre del titulo", fontSize = 20.sp, fontWeight = FontWeight.Bold)
     OutlinedTextField(
-        value = "",
+        value = tituloServicio.value,
         onValueChange = { value -> tituloServicio.value = value },
         label = { Text(text = "Titulo de la actividad *") },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxSize(),
         enabled = true,
 //        isError = nombreError
     )
@@ -428,19 +472,54 @@ fun NombreTitulo(tituloServicio: MutableState<String>, nombreError: Boolean) {
 }
 
 @Composable
-fun Imagen() {
-    Espaciado()
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(200.dp)
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.explorador),
-            contentDescription = "SuperHero Avatar",
-            modifier = Modifier.fillMaxWidth(),
-            contentScale = ContentScale.Crop
+fun Imagen(selectedImageUri: (Uri?) -> Unit) {
+
+    Text("Imágen de Actividad", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+    Espaciado(4)
+
+
+    // Botón para abrir el selector de imágenes
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            selectedImageUri(result.data?.data)
+        }
+    }
+    Row(modifier = Modifier
+        .fillMaxWidth()) {
+        AsyncImage(
+            model = selectedImageUri,
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp),
+            placeholder = painterResource(id = R.drawable.imagenselecccionada)
         )
     }
     Espaciado()
+    // Mostrar la imagen seleccionada si hay una
+    Button(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp),
+        shape = RoundedCornerShape(corner = CornerSize(12.dp)),
+        onClick = {
+            // Intent para abrir la galería
+            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            launcher.launch(intent)
+        },
+        colors = ButtonColors(
+            containerColor = botonNaranja,
+            contentColor = Color.White,
+            disabledContainerColor = Color.Gray,
+            disabledContentColor = Color.Gray
+        )
+    ) {
+        Text("Seleccionar imagen")
+    }
+    Espaciado(16)
 }
+
+
+

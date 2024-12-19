@@ -1,10 +1,10 @@
 package com.example.vivemurcia.views.home
 
 import android.util.Log
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vivemurcia.model.clases.Actividad
+import com.example.vivemurcia.model.firebase.FireStorageModel
 import com.example.vivemurcia.model.firebase.FireStoreModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +27,8 @@ class HomeViewModel @Inject constructor(
 
     fun getActividades() : List<Actividad> {
 
-        var nuevasActividades = emptyList<Actividad>()
+        var nuevasActividades: List<Actividad> = emptyList<Actividad>()
+
         viewModelScope.launch {
             try {
                  nuevasActividades = fireStoreModel.getAveturasCollection()
@@ -44,4 +45,7 @@ class HomeViewModel @Inject constructor(
         return nuevasActividades
     }
 
+
 }
+
+
