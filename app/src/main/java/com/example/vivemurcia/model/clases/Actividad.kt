@@ -1,5 +1,6 @@
 package com.example.vivemurcia.model.clases
 
+import android.net.Uri
 import com.example.vivemurcia.model.enums.EnumAmbiente
 import com.example.vivemurcia.model.enums.EnumCategories
 import com.example.vivemurcia.model.enums.EnumGrupos
@@ -21,7 +22,8 @@ data class Actividad(
     val descripcionActividad : String?,
     val localizacionActividad: String?,
     val tipoDeGrupo: EnumGrupos?,
-    val ubicacionActividad: String?
+    val ubicacionActividad: String?,
+    var uriImagen: Uri? = null
 )
 
 

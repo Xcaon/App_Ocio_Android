@@ -1,19 +1,19 @@
 package com.example.vivemurcia.model.firebase
 
 import android.util.Log
-import androidx.lifecycle.ViewModel
 import com.example.vivemurcia.data.response.ActividadResponse
 import com.example.vivemurcia.model.clases.Actividad
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Source
-import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
-import kotlin.text.get
 
 
 class FireStoreModel @Inject constructor(
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore, private val storage: FireStorageModel
 ) {
 
     companion object {
@@ -25,9 +25,16 @@ class FireStoreModel @Inject constructor(
 
         return try {
             firestore.collection(COLLECTION_ACTIVIDADES)
-                .get() // Use Source.CACHE to retrieve from cache
-                .await()
-                .map { actividad -> actividad.toObject(ActividadResponse::class.java).toDomain() }
+                .get(Source.DEFAULT) /* Lee los datos de la caché local si están disponibles y no han expirado. Si los datos no están en la caché o han expirado, se leerán del servidor. */
+                .await().map { actividad ->
+                    actividad.toObject(ActividadResponse::class.java)
+                }.map { response: ActividadResponse ->
+                    var actividad: Actividad = response.toDomain()
+                    val imageUrlDeferred = CoroutineScope(Dispatchers.IO).async {
+                        storage.getImagen(actividad.tituloActividad, actividad.idEmpresa)
+                    }
+                    actividad.apply { uriImagen = imageUrlDeferred.await() }
+                }
         } catch (e: Exception) {
             // Handle cache miss
             Log.wtf("fernando", "Error al obtener las actividades de Firestore: ${e.message}")
@@ -38,13 +45,13 @@ class FireStoreModel @Inject constructor(
 
     // Subir actividad
     suspend fun subirActividad(actividad: Actividad): Boolean {
-       return try {
-           firestore.collection(COLLECTION_ACTIVIDADES).add(actividad).await()
+        return try {
+            firestore.collection(COLLECTION_ACTIVIDADES).add(actividad).await()
             true
-       } catch (e: Exception) {
-           Log.e("fernando", "Error al subir la actividad a Firestore: ${e.message}")
-           false
-       }
+        } catch (e: Exception) {
+            Log.e("fernando", "Error al subir la actividad a Firestore: ${e.message}")
+            false
+        }
     }
 
 

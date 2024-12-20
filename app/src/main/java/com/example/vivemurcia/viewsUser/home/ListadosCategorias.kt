@@ -5,10 +5,12 @@ import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -32,12 +34,14 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
 import com.example.vivemurcia.R
 import com.example.vivemurcia.model.clases.Actividad
 import com.example.vivemurcia.model.fechas.Calendario
 import com.example.vivemurcia.model.firebase.FireStorageModel
 import com.example.vivemurcia.ui.theme.fondoPantalla
 import com.example.vivemurcia.viewsCompany.createActivity.CreaActividadViewModel
+import com.example.vivemurcia.viewsCompany.createActivity.Espaciado
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -53,50 +57,58 @@ fun ListadoAventuras() {
     val actividades: List<Actividad> by homeViewModel.actividades.collectAsState()
 
     Log.w("fernando", "Esta es la lista $actividades")
-
+    Espaciado(16)
     if (actividades.isEmpty()) {
         CircularProgressIndicatorLoader()
     } else {
         LazyVerticalGrid(columns = GridCells.Fixed(2), content = {
             items(actividades) {
-                ActividadCard(it, homeViewModel)
+                ActividadCard(it)
             }
         })
     }
 }
 
 @Composable
-fun CircularProgressIndicatorLoader() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        CircularProgressIndicator()
-    }
-}
-
-
-@Composable
-fun ActividadCard(actividad: Actividad, homeViewModel: HomeViewModel ) {
+fun ActividadCard(actividad: Actividad) {
     Card(
-        border = BorderStroke(0.2.dp, fondoPantalla), modifier = Modifier
+        border = BorderStroke(0.2.dp, fondoPantalla),
+        modifier = Modifier
             .width(200.dp)
             .padding(4.dp)
+            .height(250.dp)
     ) {
 
-
-        Image(
-            painter = painterResource(id = R.drawable.explorador),
-            contentDescription = "SuperHero Avatar",
-            modifier = Modifier.fillMaxWidth(),
-            contentScale = ContentScale.Crop
-        )
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp)) {
+            AsyncImage(
+                model = actividad.uriImagen,
+                contentDescription = "SuperHero Avatar",
+                modifier = Modifier.fillMaxWidth(),
+                contentScale = ContentScale.Crop,
+                placeholder = painterResource(R.drawable.imagenselecccionada)
+            )
+        }
 
         // Titulo de la actividad
-        Row(modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 4.dp)) { Text(text = actividad.tituloActividad!!) }
+        Row(
+            modifier = Modifier.padding(
+                8.dp,
+                8.dp,
+                8.dp,
+                4.dp
+            )
+        ) { Text(text = actividad.tituloActividad!!) }
 
-//        Row(modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 4.dp)) { Text(text = actividad.descripcionActividad!!.toString()) }
+        Row(
+            modifier = Modifier.padding(
+                8.dp,
+                8.dp,
+                8.dp,
+                4.dp
+            )
+        ) { Text(text = "Dia" + actividad.fechaHoraActividad!!.toDate().day.toString()) }
 
 
     }
@@ -117,4 +129,15 @@ fun ListadoRelax() {
 @Composable
 fun ListadoArte() {
     Text("Arte")
+}
+
+@Composable
+fun CircularProgressIndicatorLoader() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        CircularProgressIndicator()
+    }
 }

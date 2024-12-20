@@ -13,9 +13,11 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -34,16 +36,15 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.vivemurcia.R
 import com.example.vivemurcia.model.dataClass.TabItem
 import com.example.vivemurcia.model.enums.EnumCategories
 import com.example.vivemurcia.ui.theme.fondoPantalla
 
-
-@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun InicioHome() {
-    var selectedTabIndex : Int by remember { mutableIntStateOf(0) }
+    var selectedTabIndex: Int by remember { mutableIntStateOf(0) }
 
     Column(
         Modifier
@@ -54,7 +55,7 @@ fun InicioHome() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(90.dp)
+                .height(100.dp)
                 .background(Color.White)
                 .padding(horizontal = 16.dp)
         )
@@ -125,38 +126,28 @@ fun Listado(selectedTabIndex: Int) {
 }
 
 
-
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FiltroActividades() {
 
-    var searchText by remember { mutableStateOf("") }
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        OutlinedTextField(
-            value = searchText,
-            onValueChange = { searchText = it },
-            textStyle = TextStyle(color = Color.Black, fontSize = 16.sp),
-            label = { Text("¿Qué te apetece?") },
-            leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .weight(1f),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            keyboardActions = KeyboardActions(
-                onSearch = { }
-            ), shape = ShapeDefaults.Large
+    val homeViewModel: HomeViewModel = hiltViewModel<HomeViewModel>()
 
+    var searchText by remember { mutableStateOf("") }
+    var isSearching by remember { mutableStateOf(false) }
+
+    Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
+        SearchBar(
+            query = searchText,
+            onQueryChange = { searchText = it },
+            onSearch = {
+                homeViewModel.filterActividades(it)
+            },
+            active = isSearching,
+            onActiveChange = {},
+            content = {},
+            modifier = Modifier.weight(0.7f)
         )
-        OutlinedButton(modifier = Modifier
-            .padding(4.dp)
-            .weight(0.3f), onClick = { /*TODO*/ }) {
-            Icon(
-                painter = painterResource(id = R.drawable.filtro),
-                contentDescription = null,
-                modifier = Modifier.size(48.dp)
-            )
-        }
+
     }
 }
 
