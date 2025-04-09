@@ -9,16 +9,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SearchBar
-import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,37 +20,35 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.vivemurcia.R
 import com.example.vivemurcia.model.dataClass.TabItem
 import com.example.vivemurcia.model.enums.EnumCategories
 import com.example.vivemurcia.ui.theme.fondoPantalla
+import com.example.vivemurcia.viewsUser.MenuHome.tabArte.ListadoArte
+import com.example.vivemurcia.viewsUser.MenuHome.tabAventuras.ListadoAventuras
+import com.example.vivemurcia.viewsUser.MenuHome.tabCocina.ListadoCocina
+import com.example.vivemurcia.viewsUser.MenuHome.tabRelax.ListadoRelax
+
 
 @Composable
-fun InicioHome() {
+fun InicioHome(navController : NavController) {
     var selectedTabIndex: Int by remember { mutableIntStateOf(0) }
 
     Column(
         Modifier
             .fillMaxSize()
             .background(fondoPantalla)
-            .padding(top = 16.dp)
     ) {
-        Row(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp)
+                .height(120.dp)
                 .background(Color.White)
-                .padding(horizontal = 16.dp)
         )
         {
             FiltroActividades()
@@ -73,7 +64,7 @@ fun InicioHome() {
                 selectedTabIndex = updateSelectedTab
             }
         }
-        Listado(selectedTabIndex)
+        Listado(selectedTabIndex,navController)
     }
 }
 
@@ -107,20 +98,18 @@ fun CategoriasTab(selectedTabIndexActual: Int, selectedTabIndexUpdate: (Int) -> 
 
 }
 
-
 @Composable
-fun Listado(selectedTabIndex: Int) {
-
+fun Listado(selectedTabIndex: Int, navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp)
     ) {
         when (selectedTabIndex) {
-            0 -> Column { ListadoAventuras() }
-            1 -> Column { ListadoCocina() }
-            2 -> Column { ListadoRelax() }
-            3 -> Column { ListadoArte() }
+            0 -> Column { ListadoAventuras(navController) }
+            1 -> Column { ListadoCocina(navController) }
+            2 -> Column { ListadoRelax(navController) }
+            3 -> Column { ListadoArte(navController) }
         }
     }
 }
@@ -135,7 +124,7 @@ fun FiltroActividades() {
     var searchText by remember { mutableStateOf("") }
     var isSearching by remember { mutableStateOf(false) }
 
-    Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
+    // Investigar el espaciado que deja en la interfaz TODO()
         SearchBar(
             query = searchText,
             onQueryChange = { searchText = it },
@@ -145,9 +134,8 @@ fun FiltroActividades() {
             active = isSearching,
             onActiveChange = {},
             content = {},
-            modifier = Modifier.weight(0.7f)
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            placeholder = { Text("Buscar actividad") }
         )
-
-    }
 }
 

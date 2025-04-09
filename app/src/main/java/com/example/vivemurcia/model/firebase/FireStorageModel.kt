@@ -11,7 +11,7 @@ class FireStorageModel @Inject constructor(
 private val storage : FirebaseStorage)
 {
 
-    fun subirImagen(idEmpresa: String, imageUri: Uri, tituloActividad : String) {
+    fun subirImagen(idEmpresa: String, imageUri: Uri, tituloActividad : String, estadoSubida: (Boolean) -> Unit) {
 
         val imageRef = storage.reference.child("users/$idEmpresa/$tituloActividad/imagenActividad.jpg")
 
@@ -20,9 +20,11 @@ private val storage : FirebaseStorage)
         uploadTask.addOnFailureListener(
             OnFailureListener {
                 Log.e("fernando", "Error al subir la imagen")
+                estadoSubida(false)
             }
         ).addOnSuccessListener {
             Log.i("fernando", "La imagen se ha subido correctamente")
+            estadoSubida(false)
         }
     }
 

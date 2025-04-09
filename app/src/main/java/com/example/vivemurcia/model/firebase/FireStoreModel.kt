@@ -3,6 +3,7 @@ package com.example.vivemurcia.model.firebase
 import android.util.Log
 import com.example.vivemurcia.data.response.ActividadResponse
 import com.example.vivemurcia.model.clases.Actividad
+import com.example.vivemurcia.model.enums.EnumCategories
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Source
 import kotlinx.coroutines.CoroutineScope
@@ -21,10 +22,9 @@ class FireStoreModel @Inject constructor(
     }
 
     // Nos devuelve una lista de actividades
-    suspend fun getAveturasCollection(): List<Actividad> {
-
+    suspend fun getActividades(categoria : EnumCategories): List<Actividad> {
         return try {
-            firestore.collection(COLLECTION_ACTIVIDADES)
+            firestore.collection(COLLECTION_ACTIVIDADES + categoria.nombre)
                 .get(Source.DEFAULT) /* Lee los datos de la caché local si están disponibles y no han expirado. Si los datos no están en la caché o han expirado, se leerán del servidor. */
                 .await().map { actividad ->
                     actividad.toObject(ActividadResponse::class.java)
@@ -37,16 +37,16 @@ class FireStoreModel @Inject constructor(
                 }
         } catch (e: Exception) {
             // Handle cache miss
-            Log.wtf("fernando", "Error al obtener las actividades de Firestore: ${e.message}")
+//            Log.wtf("fernando", "Error al obtener las actividades de Firestore: ${e.message}")
             emptyList() // Return an empty list if cache is empty
         }
-
     }
 
     // Subir actividad
     suspend fun subirActividad(actividad: Actividad): Boolean {
         return try {
-            firestore.collection(COLLECTION_ACTIVIDADES).add(actividad).await()
+//            Log.d("fernando", "A esta categoría va: ${COLLECTION_ACTIVIDADES + "Relax"}")
+            firestore.collection(COLLECTION_ACTIVIDADES + actividad.categoriaActividad).add(actividad).await()
             true
         } catch (e: Exception) {
             Log.e("fernando", "Error al subir la actividad a Firestore: ${e.message}")

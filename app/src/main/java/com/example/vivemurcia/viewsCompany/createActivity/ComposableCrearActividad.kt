@@ -2,9 +2,11 @@ package com.example.vivemurcia.viewsCompany.createActivity
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.drawable.PaintDrawable
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -12,10 +14,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -45,6 +49,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,11 +58,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.example.vivemurcia.R
 import com.example.vivemurcia.model.clases.Actividad
 import com.example.vivemurcia.model.enums.EnumAmbiente
 import com.example.vivemurcia.model.enums.EnumCategories
 import com.example.vivemurcia.model.enums.EnumGrupos
+import com.example.vivemurcia.model.toasts.AutoToastExample
 import com.example.vivemurcia.ui.theme.fondoPantalla
 import com.example.vivemurcia.views.home.HomeViewModel
 import com.example.vivemurcia.viewsCompany.ui.theme.botonNaranja
@@ -107,9 +117,25 @@ fun InicioCrearActividad() {
         CategoriaActividad {
             categoriaActividad.value = it
         }
-        LocalizacionServicioGoogleMaps(localizacionActividad)
-        UbicacionServicio(ubicacionServicio)
         TipoDeGrupo { tipoDeGrupo.value = it }
+        OutlinedCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .background(Color.White)
+                .padding(bottom = 16.dp)
+        ) {
+            Row(modifier = Modifier.padding(16.dp)) {
+                Text("Localización")
+            }
+            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                LocalizacionServicioGoogleMaps(localizacionActividad)
+            }
+            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                UbicacionServicio(ubicacionServicio)
+            }
+
+        }
         AmbienteServicio {
             ambienteActividad.value = it
 //            Log.i("fernando", "Se ha guardado el ambiente $it")
@@ -130,7 +156,7 @@ fun InicioCrearActividad() {
         )
         // Guardar opciones del formulario
         BotonesCrearActividad {
-             actividadCreada = Actividad(
+            actividadCreada = Actividad(
                 idActividad = null,
                 tituloActividad = tituloServicio.value,
                 fechaHoraActividad = Timestamp.now(), // Temporal
@@ -144,17 +170,28 @@ fun InicioCrearActividad() {
             )
 
             CoroutineScope(Dispatchers.IO).launch {
-                creador.crearActividad(actividadCreada) {estadoSubido  ->
+                creador.crearActividad(actividadCreada) { estadoSubido ->
                     if (estadoSubido) {
                         Log.d("fernando", "Se ha guardado la actividad $actividadCreada")
+                        // Si se han subido los datos, entonces pasamos a subir las imagenes
+                        // Subir Imagen
+                        creador.subirImagenUri(
+                            idEmpresa = actividadCreada.idEmpresa.toString(),
+                            uri = selectedImageUri!!,
+                            tituloActividad = tituloServicio.value
+                        ) {
+                            if (true) {
+                                Log.d("fernando", "Se ha subido la imagen")
+                            } else {
+                                Log.d("fernando", "No se ha subido la imagen")
+                            }
+                        }
                     } else {
                         Log.d("fernando", "No se ha guardado la actividad $actividadCreada")
                     }
                 }
-                // Subir Imagen
-                creador.subirImagenUri(idEmpresa = actividadCreada.idEmpresa.toString(), uri = selectedImageUri!!, tituloActividad = tituloServicio.value)
-
             }
+
 
 
         }
@@ -195,7 +232,7 @@ fun TipoDeGrupo(onSave: (EnumGrupos) -> Unit) {
                 disabledContentColor = Color.Gray
             )
         ) {
-            Text("Seleccione el tipo de Grupo")
+            Text("Seleccionar grupo", fontSize = 18.sp)
         }
 
         // Menú desplegable
@@ -211,7 +248,7 @@ fun TipoDeGrupo(onSave: (EnumGrupos) -> Unit) {
             }
         }
     }
-    Espaciado()
+    Espaciado(48)
 }
 
 @Composable
@@ -305,19 +342,17 @@ fun AmbienteServicio(opcionEscogida: (EnumAmbiente) -> Unit) {
 
 @Composable
 fun UbicacionServicio(ubicacionServicio: MutableState<String>) {
-    Text("Dirección del lugar", fontSize = 20.sp, fontWeight = FontWeight.Bold)
     OutlinedTextField(
         value = ubicacionServicio.value,
         onValueChange = { textoIntroducido -> ubicacionServicio.value = textoIntroducido },
         label = { Text(text = "Introduce la dirección del lugar manualmente") },
         modifier = Modifier.fillMaxWidth()
     )
-    Espaciado(32)
+    Espaciado(16)
 }
 
 @Composable
 fun LocalizacionServicioGoogleMaps(localizacionActividad: MutableState<String>) {
-    Text("Url de Google Maps", fontSize = 20.sp, fontWeight = FontWeight.Bold)
     OutlinedTextField(
         value = localizacionActividad.value,
         onValueChange = { value -> localizacionActividad.value = value },
@@ -356,7 +391,7 @@ fun CategoriaActividad(categoriaActividad: (EnumCategories) -> Unit) {
                 disabledContentColor = Color.Gray
             )
         ) {
-            Text("Seleccione la Categoría de la Actividad", fontSize = 16.sp)
+            Text("Seleccionar categoría", fontSize = 16.sp)
         }
 
         // Menú desplegable
@@ -372,7 +407,7 @@ fun CategoriaActividad(categoriaActividad: (EnumCategories) -> Unit) {
             }
         }
     }
-    Espaciado(32)
+    Espaciado(16)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -416,7 +451,7 @@ fun FechaServicio() {
                     disabledContentColor = Color.Gray
                 )
             ) {
-                Text("Seleccionar fecha", fontSize = 16.sp)
+                Text("Seleccionar fecha", fontSize = 18.sp)
             }
         }
     }
@@ -471,34 +506,40 @@ fun NombreTitulo(tituloServicio: MutableState<String>, nombreError: Boolean) {
     Espaciado()
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun Imagen(selectedImageUri: (Uri?) -> Unit) {
 
     Text("Imágen de Actividad", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-    Espaciado(4)
-
-
+    Espaciado(8)
+    var imagen: Uri? by remember { mutableStateOf<Uri?>(null) }
+    val context = LocalContext.current
     // Botón para abrir el selector de imágenes
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
+            imagen = result.data?.data
             selectedImageUri(result.data?.data)
         }
     }
-    Row(modifier = Modifier
-        .fillMaxWidth()) {
-        AsyncImage(
-            model = selectedImageUri,
-            contentDescription = null,
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp)
+            .background(Color.Gray)
+    ) {
+        GlideImage(
+            model = imagen,
+            contentDescription = "imagen",
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp),
-            placeholder = painterResource(id = R.drawable.imagenselecccionada)
+                .fillMaxHeight(),
+            contentScale = ContentScale.Crop
         )
     }
     Espaciado()
-    // Mostrar la imagen seleccionada si hay una
+    // Al dar click cargamos la imagen
     Button(
         modifier = Modifier
             .fillMaxWidth()
@@ -518,7 +559,7 @@ fun Imagen(selectedImageUri: (Uri?) -> Unit) {
     ) {
         Text("Seleccionar imagen")
     }
-    Espaciado(16)
+    Espaciado(32)
 }
 
 

@@ -13,7 +13,8 @@ enum class Rutas(val nombre: String) {
     INICIO("inicio"),
     RESERVAS("reservas"),
     SEGUIDOS("seguidos"),
-    CONFIGURACION("configuracion")
+    CONFIGURACION("configuracion"),
+    DETALLE("detalle")
 }
 
 //// La sealed class son como los enums pero con funcionalidades extendidas

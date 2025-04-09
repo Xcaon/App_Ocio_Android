@@ -15,22 +15,21 @@ class CreaActividadViewModel @Inject constructor
     ViewModel() {
 
     suspend fun crearActividad(actividad: Actividad, estadoSubido: (Boolean) -> Unit) {
-
-
         estadoSubido(firestore.subirActividad(actividad))
-
     }
 
-    fun subirImagenUri(idEmpresa: String, uri: Uri, tituloActividad: String) {
+    fun subirImagenUri(idEmpresa: String, uri: Uri, tituloActividad: String, estadoSubido: (Boolean) -> Unit) {
         // Subimos la imagen
+
         storage.subirImagen(
             //
             idEmpresa = idEmpresa,
             imageUri = uri,
             tituloActividad = tituloActividad
-        )
+        ) {
+            estadoSubido(it)
+        }
     }
-
 
 
 }

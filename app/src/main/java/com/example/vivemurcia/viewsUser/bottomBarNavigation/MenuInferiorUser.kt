@@ -21,6 +21,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 
 // Este fichero define el diseño del menu inferior
+// Usamos el navController para gestionar la ruta a la hora de pulsar en un icono
+
 @Composable
 fun MyBottomNavigation(navController: NavHostController) {
 

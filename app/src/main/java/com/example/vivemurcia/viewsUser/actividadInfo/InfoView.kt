@@ -1,4 +1,4 @@
-package com.example.vivemurcia.viewsUser.info
+package com.example.vivemurcia.viewsUser.actividadInfo
 
 import android.content.Intent
 import android.os.Bundle

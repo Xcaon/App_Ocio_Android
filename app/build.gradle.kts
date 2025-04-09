@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.example.vivemurcia"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.vivemurcia"
@@ -53,6 +53,7 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
     implementation("com.github.skydoves:landscapist-glide:2.2.5")
+    implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
 
     // FireStore
     implementation("com.google.firebase:firebase-firestore-ktx")
@@ -71,7 +72,8 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
-    implementation("androidx.navigation:navigation-compose:2.8.5")
+    implementation("androidx.navigation:navigation-compose:2.8.9")
+
     // Iconos svg
     implementation("io.coil-kt:coil-compose:2.4.0")
 

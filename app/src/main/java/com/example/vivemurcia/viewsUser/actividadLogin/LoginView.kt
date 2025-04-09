@@ -14,7 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.example.vivemurcia.model.sharedPreferences.PreferencesConfig
 import com.example.vivemurcia.ui.theme.VivemurciaTheme
 import com.example.vivemurcia.views.home.HomeView
-import com.example.vivemurcia.viewsUser.info.InfoView
+import com.example.vivemurcia.viewsUser.actividadInfo.InfoView
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
