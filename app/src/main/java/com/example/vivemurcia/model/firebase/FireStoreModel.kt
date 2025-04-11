@@ -21,18 +21,34 @@ class FireStoreModel @Inject constructor(
         const val COLLECTION_ACTIVIDADES = "actividades"
     }
 
+    suspend fun getSingleActivity(idActividad: String, categoriaActividad: String) : Actividad? {
+        return try {
+            firestore.collection(COLLECTION_ACTIVIDADES + categoriaActividad)
+                .document(idActividad)
+                .get(Source.DEFAULT)
+                .await().toObject(ActividadResponse::class.java)!!.toDomain()
+        } catch (e: Exception) {
+            Log.e("fernando", "Error al obtener la actividad de Firestore: ${e.message}")
+            null
+        }
+    }
+
     // Nos devuelve una lista de actividades
     suspend fun getActividades(categoria : EnumCategories): List<Actividad> {
         return try {
             firestore.collection(COLLECTION_ACTIVIDADES + categoria.nombre)
                 .get(Source.DEFAULT) /* Lee los datos de la caché local si están disponibles y no han expirado. Si los datos no están en la caché o han expirado, se leerán del servidor. */
-                .await().map { actividad ->
-                    actividad.toObject(ActividadResponse::class.java)
-                }.map { response: ActividadResponse ->
-                    var actividad: Actividad = response.toDomain()
+                .await()
+                .map{ document ->
+                    val response = document.toObject(ActividadResponse::class.java)
+                    var actividad = response.toDomain()
+                    actividad.idActividad = document.id
+
+                    // Con async ponemos en segundo plano a recuperar la imagen
                     val imageUrlDeferred = CoroutineScope(Dispatchers.IO).async {
                         storage.getImagen(actividad.tituloActividad, actividad.idEmpresa)
                     }
+                    // Aqui usamos await para decir oye cuando acabes de obtener en segundo plano la imagen me la asignas
                     actividad.apply { uriImagen = imageUrlDeferred.await() }
                 }
         } catch (e: Exception) {

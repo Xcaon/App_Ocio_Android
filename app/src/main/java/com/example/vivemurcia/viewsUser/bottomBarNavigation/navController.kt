@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -17,11 +18,13 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.vivemurcia.views.home.InicioHome
 import com.example.vivemurcia.viewsUser.MenuHome.pantallaDetalle.MostrarActividadDetalle
+import com.example.vivemurcia.viewsUser.MenuHome.pantallaDetalle.ViewModelDetalle
 
 @Composable
 fun MyApp() {
     // Establecemos el controlador de navegación, esto es el inicio de all
     val navController = rememberNavController()
+    val viewModelDetalle: ViewModelDetalle = hiltViewModel<ViewModelDetalle>()
 
     Scaffold(
         bottomBar = { MyBottomNavigation(navController) }
@@ -29,16 +32,16 @@ fun MyApp() {
 
         NavHost(
             navController = navController,
-            startDestination = Rutas.INICIO.nombre, // Define tu pantalla inicial
+            startDestination = Rutas.INICIO.nombreRuta, // Define tu pantalla inicial
             Modifier.padding(innerPadding)
         ) {
 
             // Dentro de cada ruta se pone el contenido que va a enseñar
-            composable(Rutas.INICIO.nombre) {
+            composable(Rutas.INICIO.nombreRuta) {
                 InicioHome(navController)
             }
 
-            composable(Rutas.RESERVAS.nombre) {
+            composable(Rutas.RESERVAS.nombreRuta) {
                 Column(
                     Modifier
                         .fillMaxSize()
@@ -49,7 +52,7 @@ fun MyApp() {
                 }
             }
 
-            composable(Rutas.SEGUIDOS.nombre) {
+            composable(Rutas.SEGUIDOS.nombreRuta) {
                 Column(
                     Modifier
                         .fillMaxSize()
@@ -60,7 +63,7 @@ fun MyApp() {
                 }
             }
 
-            composable(Rutas.CONFIGURACION.nombre) {
+            composable(Rutas.CONFIGURACION.nombreRuta) {
                 Column(
                     Modifier
                         .fillMaxSize()
@@ -72,21 +75,20 @@ fun MyApp() {
             }
 
             composable(
-                "detalle/{tituloActividad}/{localizacionActividad}",
-                arguments = listOf(
-                    navArgument("tituloActividad") { type = NavType.StringType },
-                    navArgument("localizacionActividad") { type = NavType.StringType }
-                )) {
+                route = Rutas.DETALLE.nombreRuta,
+                arguments = listOf(navArgument("idActividad") { type = NavType.StringType },
+                    navArgument("categoriaActividad") { type = NavType.StringType }
+                )) { NavBackStackEntry ->
                 Column(
                     Modifier
                         .fillMaxSize()
                         .background(Color.Gray),
                     verticalArrangement = Arrangement.Center
                 ) {
-                    // 👇 AQUÍ es lo que me preguntabas:
-                    val tituloActividad = it.arguments?.getString("tituloActividad")
-                    val localizacionActividad = it.arguments?.getString("localizacionActividad")
-                    MostrarActividadDetalle(tituloActividad, localizacionActividad)
+                    val idActividad = NavBackStackEntry.arguments?.getString("idActividad")
+                    val categoriaActividad = NavBackStackEntry.arguments?.getString("categoriaActividad")
+
+                    MostrarActividadDetalle(idActividad, categoriaActividad)
                 }
             }
 

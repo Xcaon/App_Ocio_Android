@@ -32,7 +32,7 @@ fun MyBottomNavigation(navController: NavHostController) {
             selected = index == 0,
             onClick = {
                 index = 0
-                navController.navigate(Rutas.INICIO.nombre) {
+                navController.navigate(Rutas.INICIO.nombreRuta) {
 
                     // launchSingleTop = true indica al NavController que si la pantalla Home ya está en la
                     // parte superior del back stack, no se creará una nueva instancia. En su lugar, se reutilizará la instancia existente.
@@ -53,7 +53,7 @@ fun MyBottomNavigation(navController: NavHostController) {
             selected = index == 1,
             onClick = {
                 index = 1
-                navController.navigate(Rutas.RESERVAS.nombre) {
+                navController.navigate(Rutas.RESERVAS.nombreRuta) {
 
                     // launchSingleTop = true indica al NavController que si la pantalla Home ya está en la
                     // parte superior del back stack, no se creará una nueva instancia. En su lugar, se reutilizará la instancia existente.
@@ -74,7 +74,7 @@ fun MyBottomNavigation(navController: NavHostController) {
             selected = index == 2,
             onClick = {
                 index = 2
-                navController.navigate(Rutas.SEGUIDOS.nombre) {
+                navController.navigate(Rutas.SEGUIDOS.nombreRuta) {
 
                     // launchSingleTop = true indica al NavController que si la pantalla Home ya está en la
                     // parte superior del back stack, no se creará una nueva instancia. En su lugar, se reutilizará la instancia existente.
@@ -95,7 +95,7 @@ fun MyBottomNavigation(navController: NavHostController) {
             selected = index == 3,
             onClick = {
                 index = 3
-                navController.navigate(Rutas.CONFIGURACION.nombre) {
+                navController.navigate(Rutas.CONFIGURACION.nombreRuta) {
 
                     // launchSingleTop = true indica al NavController que si la pantalla Home ya está en la
                     // parte superior del back stack, no se creará una nueva instancia. En su lugar, se reutilizará la instancia existente.

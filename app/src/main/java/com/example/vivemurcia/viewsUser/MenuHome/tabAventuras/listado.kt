@@ -14,13 +14,13 @@ import com.example.vivemurcia.views.home.ActividadCard
 import com.example.vivemurcia.views.home.CircularProgressIndicatorLoader
 import com.example.vivemurcia.views.home.HomeViewModel
 import com.example.vivemurcia.viewsCompany.createActivity.Espaciado
-import com.example.vivemurcia.viewsUser.MenuHome.pantallaDetalle.viewModelDetalle
+import com.example.vivemurcia.viewsUser.MenuHome.pantallaDetalle.ViewModelDetalle
 
 @Composable
 fun ListadoAventuras(navController: NavController) {
 
     val homeViewModel: HomeViewModel = hiltViewModel<HomeViewModel>()
-    val viewModelDetalle : viewModelDetalle = hiltViewModel<viewModelDetalle>()
+    val viewModelDetalle : ViewModelDetalle = hiltViewModel<ViewModelDetalle>()
 
     // Obtenemos las actividades de Firestore
     val actividades: List<Actividad> by homeViewModel.actividadesAventuras.collectAsState()
