@@ -24,7 +24,6 @@ import com.example.vivemurcia.viewsUser.MenuHome.pantallaDetalle.ViewModelDetall
 fun MyApp() {
     // Establecemos el controlador de navegación, esto es el inicio de all
     val navController = rememberNavController()
-    val viewModelDetalle: ViewModelDetalle = hiltViewModel<ViewModelDetalle>()
 
     Scaffold(
         bottomBar = { MyBottomNavigation(navController) }

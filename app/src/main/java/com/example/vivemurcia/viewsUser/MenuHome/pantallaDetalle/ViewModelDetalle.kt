@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.vivemurcia.model.clases.Actividad
+import com.example.vivemurcia.model.firebase.FireStorageModel
 import com.example.vivemurcia.model.firebase.FireStoreModel
 import com.example.vivemurcia.views.bottomBar.Rutas
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ViewModelDetalle @Inject constructor(
-    private val fireStoreModel: FireStoreModel
+    private val fireStoreModel: FireStoreModel,
+    private val storage: FireStorageModel
 ) : ViewModel() {
 
     var _actividad = MutableStateFlow<Actividad?>(null)
@@ -46,10 +48,8 @@ class ViewModelDetalle @Inject constructor(
     {
         viewModelScope.launch {
             var actividad = fireStoreModel.getSingleActivity(idActividad, categoriaActividad.toString())
-//            _actividad.value?.idActividad = idActividad
             _actividad.value = actividad
             _actividad.value?.idActividad = idActividad
-            Log.d("fernando", "Id actividad en el launch del Detalle: $idActividad")
         }
 
     }

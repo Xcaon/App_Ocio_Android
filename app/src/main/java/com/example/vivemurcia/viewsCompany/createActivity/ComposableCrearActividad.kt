@@ -2,11 +2,9 @@ package com.example.vivemurcia.viewsCompany.createActivity
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.drawable.PaintDrawable
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -51,30 +49,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.AsyncImage
-import coil.compose.AsyncImagePainter
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.example.vivemurcia.R
 import com.example.vivemurcia.model.clases.Actividad
 import com.example.vivemurcia.model.enums.EnumAmbiente
 import com.example.vivemurcia.model.enums.EnumCategories
 import com.example.vivemurcia.model.enums.EnumGrupos
-import com.example.vivemurcia.model.toasts.AutoToastExample
 import com.example.vivemurcia.ui.theme.fondoPantalla
-import com.example.vivemurcia.views.home.HomeViewModel
 import com.example.vivemurcia.viewsCompany.ui.theme.botonNaranja
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.Dispatcher
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -166,34 +157,45 @@ fun InicioCrearActividad() {
                 localizacionActividad = localizacionActividad.value,
                 tipoDeGrupo = tipoDeGrupo.value,
                 ubicacionActividad = ubicacionServicio.value,
-                idEmpresa = "ejemplo"
+                idEmpresa = "ejemplo",
+                uriImagen = null
             )
 
-            CoroutineScope(Dispatchers.IO).launch {
-                creador.crearActividad(actividadCreada) { estadoSubido ->
-                    if (estadoSubido) {
-                        Log.d("fernando", "Se ha guardado la actividad $actividadCreada")
-                        // Si se han subido los datos, entonces pasamos a subir las imagenes
-                        // Subir Imagen
-                        creador.subirImagenUri(
-                            idEmpresa = actividadCreada.idEmpresa.toString(),
-                            uri = selectedImageUri!!,
-                            tituloActividad = tituloServicio.value
-                        ) {
-                            if (true) {
-                                Log.d("fernando", "Se ha subido la imagen")
-                            } else {
-                                Log.d("fernando", "No se ha subido la imagen")
-                            }
-                        }
-                    } else {
-                        Log.d("fernando", "No se ha guardado la actividad $actividadCreada")
-                    }
-                }
-            }
+            subirActividadStorage(creador, actividadCreada, selectedImageUri)
+        }
+    }
+}
 
+fun subirActividadStorage(creador: CreaActividadViewModel, actividadCreada : Actividad, selectedImageUri : Uri?, ){
 
+    CoroutineScope(Dispatchers.IO).launch {
+        var uriImagenSubida : Uri? = Uri.EMPTY
+         uriImagenSubida = creador.subirImagenUri(
+            idEmpresa = actividadCreada.idEmpresa.toString(),
+            uri = selectedImageUri!!,
+            tituloActividad = actividadCreada.tituloActividad.toString()
+        )
 
+        if ( !uriImagenSubida.equals(Uri.EMPTY) ){
+            crearActividad(creador, actividadCreada, uriImagenSubida)
+        }
+    }
+}
+
+ suspend fun crearActividad(
+     creador: CreaActividadViewModel,
+     actividadCreada: Actividad,
+     uriImagenSubida: Uri
+ ){
+     actividadCreada.uriImagen = uriImagenSubida
+    creador.crearActividad(actividadCreada) { estadoSubido ->
+        if (estadoSubido) {
+            Log.i("fernando", "Se ha guardado la actividad $actividadCreada")
+            // Si se han subido los datos, entonces pasamos a subir las imagenes
+            // Subir Imagen
+
+        } else {
+            Log.wtf("fernando", "No se ha guardado la actividad $actividadCreada")
         }
     }
 }
@@ -236,7 +238,8 @@ fun TipoDeGrupo(onSave: (EnumGrupos) -> Unit) {
         }
 
         // Menú desplegable
-        DropdownMenu(expanded = expanded,
+        DropdownMenu(
+            expanded = expanded,
             onDismissRequest = { expanded = false } // Cierra el menú al hacer clic afuera
         ) {
             EnumGrupos.entries.forEach { option: EnumGrupos ->
@@ -395,7 +398,8 @@ fun CategoriaActividad(categoriaActividad: (EnumCategories) -> Unit) {
         }
 
         // Menú desplegable
-        DropdownMenu(expanded = expanded,
+        DropdownMenu(
+            expanded = expanded,
             onDismissRequest = { expanded = false } // Cierra el menú al hacer clic afuera
         ) {
             EnumCategories.entries.forEach { option: EnumCategories ->

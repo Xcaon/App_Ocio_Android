@@ -25,7 +25,7 @@ fun ListadoArte(navController: NavController?) {
     // Obtenemos las actividades de Firestore
     val actividades: List<Actividad> by homeViewModel.actividadesArte.collectAsState()
 
-    Log.w("fernando", "Esta es la lista $actividades")
+//    Log.w("fernando", "Esta es la lista $actividades")
     Espaciado(16)
     if (actividades.isEmpty()) {
         CircularProgressIndicatorLoader()

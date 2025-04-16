@@ -6,6 +6,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.example.vivemurcia.R
 
 
 // Set of Material typography styles to start with
@@ -24,5 +25,7 @@ val Typography = Typography(
         fontSize = 24.sp,
         lineHeight = 0.sp,
         letterSpacing = 0.5.sp
-    )
+    ),
+
+
 )

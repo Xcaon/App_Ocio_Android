@@ -82,6 +82,10 @@ class HomeViewModel @Inject constructor(
         return nuevasActividades
     }
 
+
+
+
+
     // PENDIENTE DE ADAPTAR CON TODOS LOS FILTROS
     // Actualizar actividades según el filtro
     fun filterActividades(query: String) {

@@ -2,42 +2,59 @@ package com.example.vivemurcia.model.firebase
 
 import android.net.Uri
 import android.util.Log
+import androidx.core.net.toUri
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class FireStorageModel @Inject constructor(
-private val storage : FirebaseStorage)
-{
+    private val storage: FirebaseStorage
+) {
 
-    fun subirImagen(idEmpresa: String, imageUri: Uri, tituloActividad : String, estadoSubida: (Boolean) -> Unit) {
+    suspend fun subirImagen(
+        idEmpresa: String,
+        imageUri: Uri,
+        tituloActividad: String
+    ): Uri {
 
-        val imageRef = storage.reference.child("users/$idEmpresa/$tituloActividad/imagenActividad.jpg")
+        val imageRef =
+            storage.reference.child("users/$idEmpresa/$tituloActividad/imagenActividad.jpg")
 
         val uploadTask = imageRef.putFile(imageUri)
 
-        uploadTask.addOnFailureListener(
+        // Aprovechamos y recuperamos la url para asignarselo a la actividad
+        val downloadurl = uploadTask.continueWithTask { task ->
+            if (!task.isSuccessful) {
+                task.exception?.let {
+                    throw it
+                }
+            }
+            imageRef.downloadUrl
+        }.addOnFailureListener(
             OnFailureListener {
                 Log.e("fernando", "Error al subir la imagen")
-                estadoSubida(false)
             }
         ).addOnSuccessListener {
             Log.i("fernando", "La imagen se ha subido correctamente")
-            estadoSubida(false)
-        }
+        }.await()
+
+        return downloadurl
     }
 
+    // Recuperamos una imagen
     suspend fun getImagen(tituloActividad: String?, idEmpresa: String?): Uri? {
-        var uri : Uri? = null
+        var uri: Uri? = null
         try {
-            val imageRef = storage.reference.child("/users/$idEmpresa/$tituloActividad/imagenActividad.jpg")
+            val imageRef =
+                storage.reference.child("/users/$idEmpresa/$tituloActividad/imagenActividad.jpg")
             uri = imageRef.downloadUrl.await()
-        } catch (e : Exception) {
+        } catch (e: Exception) {
             Log.e("fernando", "Error al obtener la imagen: ${e.message}")
         }
-
         return uri
     }
+
+
 
 }
