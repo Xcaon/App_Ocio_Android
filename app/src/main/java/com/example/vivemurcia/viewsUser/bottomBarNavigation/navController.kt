@@ -16,6 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.vivemurcia.views.config.Inicio
 import com.example.vivemurcia.views.home.InicioHome
 import com.example.vivemurcia.viewsUser.MenuHome.pantallaDetalle.MostrarActividadDetalle
 import com.example.vivemurcia.viewsUser.MenuHome.pantallaDetalle.ViewModelDetalle
@@ -69,7 +70,7 @@ fun MyApp() {
                         .background(Color.Black),
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Text(text = "Esto es la configuración", color = Color.White)
+                    Inicio()
                 }
             }
 

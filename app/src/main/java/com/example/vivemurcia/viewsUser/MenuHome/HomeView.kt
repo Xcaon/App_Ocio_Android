@@ -1,5 +1,6 @@
 package com.example.vivemurcia.views.home
 
+import android.content.res.Resources
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,14 +19,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.vivemurcia.R
 import com.example.vivemurcia.model.clases.Actividad
@@ -33,7 +37,11 @@ import com.example.vivemurcia.ui.theme.VivemurciaTheme
 import com.example.vivemurcia.ui.theme.fondoPantalla
 import com.example.vivemurcia.views.bottomBar.MyApp
 import com.example.vivemurcia.views.bottomBar.Rutas
+import com.google.firebase.Timestamp
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 @AndroidEntryPoint
 class HomeView : ComponentActivity() {
@@ -42,7 +50,7 @@ class HomeView : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             VivemurciaTheme {
-                MyApp()
+                    MyApp()
             }
         }
     }
@@ -56,8 +64,7 @@ fun ActividadCard(actividad: Actividad, onClickActividad: (Actividad) -> Unit ) 
         modifier = Modifier
             .width(200.dp)
             .padding(4.dp)
-            .height(250.dp)
-            .background(Color.White),
+            .background(Color.Transparent),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         onClick = {
             // Aqui  lanzamos el proceso para enseñar la actividad
@@ -82,22 +89,21 @@ fun ActividadCard(actividad: Actividad, onClickActividad: (Actividad) -> Unit ) 
 
         // Titulo de la actividad
         Row(
-            modifier = Modifier.padding(
-                8.dp,
-                8.dp,
-                8.dp,
-                4.dp
+            modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 2.dp
             )
-        ) { Text(text = actividad.tituloActividad!!) }
+        ) { Text(style = MaterialTheme.typography.bodySmall, fontSize = 16.sp, text = actividad.tituloActividad!!.replaceFirstChar { it.uppercase() }) }
+
+        // Fecha y hora
+        val timestamp: Timestamp = actividad.fechaHoraActividad!! // de Firebase
+        val calendar = Calendar.getInstance().apply {
+            time = timestamp.toDate()
+        }
+        val formato = SimpleDateFormat("d MMMM", Locale("es", "ES"))
+        val fechaBonita = formato.format(calendar.time)
 
         Row(
-            modifier = Modifier.padding(
-                8.dp,
-                8.dp,
-                8.dp,
-                4.dp
-            )
-        ) { Text(text = "Dia" + actividad.fechaHoraActividad!!.toDate().day.toString()) }
+            modifier = Modifier.padding(8.dp, 2.dp, 8.dp, 4.dp)
+        ) { Text(fontSize = 14.sp, text = "$fechaBonita") }
     }
 }
 

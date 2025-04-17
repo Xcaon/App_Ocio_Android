@@ -9,8 +9,17 @@ import androidx.compose.ui.unit.sp
 import com.example.vivemurcia.R
 
 
+
 // Set of Material typography styles to start with
 val Typography = Typography(
+
+    displayLarge = TextStyle (
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 24.sp,
+        lineHeight = 0.sp,
+        letterSpacing = 0.5.sp
+    ),
     bodyLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
@@ -19,13 +28,12 @@ val Typography = Typography(
         letterSpacing = 0.5.sp
 
     ),
-    displayLarge = TextStyle (
-        fontFamily = FontFamily.Default,
+    bodySmall = TextStyle (
+        fontFamily = FontFamily(Font(R.font.notosansregular)),
         fontWeight = FontWeight.Normal,
-        fontSize = 24.sp,
-        lineHeight = 0.sp,
-        letterSpacing = 0.5.sp
-    ),
+        fontSize = 12.sp,
+        lineHeight = 18.sp,
+        letterSpacing = 0.5.sp),
 
 
 )

@@ -43,12 +43,10 @@ fun InicioHome(navController : NavController) {
     Column(
         Modifier
             .fillMaxSize()
-            .background(fondoPantalla)
     ) {
         Column(
             modifier = Modifier
                 .height(120.dp)
-                .background(Color.White)
         )
         {
             FiltroActividades()
@@ -57,7 +55,6 @@ fun InicioHome(navController : NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(70.dp)
-                .background(Color.White)
         ) {
             // Empieza en 0 porque es el primer tab
             CategoriasTab(selectedTabIndex) { updateSelectedTab ->
@@ -81,7 +78,7 @@ fun CategoriasTab(selectedTabIndexActual: Int, selectedTabIndexUpdate: (Int) -> 
     Column {
         TabRow(selectedTabIndex = selectedTabIndexActual) {
             tabs.forEachIndexed { index, title ->
-                Tab(text = { Text(tabs[index].title, color = Color.Black) },
+                Tab(text = { Text(tabs[index].title) },
                     selected = selectedTabIndexActual == index, // Marcar como seleccionado
                     onClick = { selectedTabIndexUpdate(index) },
                     icon = {
