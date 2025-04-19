@@ -1,6 +1,7 @@
 package com.example.vivemurcia.ui.theme
 
 import android.os.Build
+import android.util.Log
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -21,11 +22,10 @@ private val DarkColorScheme = darkColorScheme(
 
 private val LightColorScheme = lightColorScheme(
     primary = colorPrimario,
-    secondary = SoftPink,
+    secondary = Color.Black,
     background = fondoPantalla,
-    onBackground = colorNegroProyecto
-
-
+    onBackground = colorNegroProyecto,
+    surface = Color.White,
 )
 
 @Composable
@@ -43,6 +43,7 @@ fun VivemurciaTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
+
 
     MaterialTheme(
         colorScheme = colorScheme,

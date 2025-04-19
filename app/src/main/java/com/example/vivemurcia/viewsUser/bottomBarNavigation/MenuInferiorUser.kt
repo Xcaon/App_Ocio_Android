@@ -18,6 +18,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 
 // Este fichero define el diseño del menu inferior
@@ -41,7 +42,7 @@ fun MyBottomNavigation(navController: NavHostController) {
                     restoreState = true
                 }
             },
-            label = { Text(text = "Inicio") },
+            label = { Text(fontSize = 12.sp,text = "Inicio") },
             icon = {
                 Icon(
                     imageVector = Icons.Default.Home,
@@ -62,7 +63,7 @@ fun MyBottomNavigation(navController: NavHostController) {
                     restoreState = true
                 }
             },
-            label = { Text(text = "Reservas") },
+            label = { Text(fontSize = 12.sp,text = "Reservas") },
             icon = {
                 Icon(
                     imageVector = Icons.Default.DateRange,
@@ -83,7 +84,7 @@ fun MyBottomNavigation(navController: NavHostController) {
                     restoreState = true
                 }
             },
-            label = { Text(text = "Seguidos") },
+            label = { Text(fontSize = 12.sp,text = "Seguidos") },
             icon = {
                 Icon(
                     imageVector = Icons.Default.Notifications,
@@ -104,7 +105,7 @@ fun MyBottomNavigation(navController: NavHostController) {
                     restoreState = true
                 }
             },
-            label = { Text(text = "Configuración") },
+            label = { Text(fontSize = 12.sp, text = "Configuración") },
             icon = {
                 Icon(
                     imageVector = Icons.Default.Settings,

@@ -63,7 +63,7 @@ class LoginView : ComponentActivity() {
             overridePendingTransition(android.R.anim.fade_out, android.R.anim.fade_in)
         } else {
             setContent {
-                VivemurciaTheme {
+                VivemurciaTheme(darkTheme = false) {
                     InitLogin {
                         signIn()
                     }

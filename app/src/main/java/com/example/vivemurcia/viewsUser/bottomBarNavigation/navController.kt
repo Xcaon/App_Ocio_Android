@@ -10,6 +10,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -38,6 +40,7 @@ fun MyApp() {
 
             // Dentro de cada ruta se pone el contenido que va a enseñar
             composable(Rutas.INICIO.nombreRuta) {
+                val focusManager = LocalFocusManager.current
                 InicioHome(navController)
             }
 

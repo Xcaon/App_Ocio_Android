@@ -1,12 +1,14 @@
 package com.example.vivemurcia.viewsUser.MenuHome.tabArte
 
 import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.vivemurcia.model.clases.Actividad
@@ -30,7 +32,7 @@ fun ListadoArte(navController: NavController?) {
     if (actividades.isEmpty()) {
         CircularProgressIndicatorLoader()
     } else {
-        LazyVerticalGrid(columns = GridCells.Fixed(2), content = {
+        LazyVerticalGrid(columns = GridCells.Fixed(2), verticalArrangement = Arrangement.spacedBy(16.dp), content = {
             items(actividades) {
                 ActividadCard(it) {
                     viewModelDetalle.inicialNavController(navController!!)
