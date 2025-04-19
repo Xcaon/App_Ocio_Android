@@ -82,17 +82,12 @@ fun MyApp() {
                 arguments = listOf(navArgument("idActividad") { type = NavType.StringType },
                     navArgument("categoriaActividad") { type = NavType.StringType }
                 )) { NavBackStackEntry ->
-                Column(
-                    Modifier
-                        .fillMaxSize()
-                        .background(Color.Gray),
-                    verticalArrangement = Arrangement.Center
-                ) {
+
                     val idActividad = NavBackStackEntry.arguments?.getString("idActividad")
                     val categoriaActividad = NavBackStackEntry.arguments?.getString("categoriaActividad")
 
                     MostrarActividadDetalle(idActividad, categoriaActividad)
-                }
+
             }
 
         }

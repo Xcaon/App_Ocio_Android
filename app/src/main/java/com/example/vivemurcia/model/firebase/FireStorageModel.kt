@@ -18,8 +18,11 @@ class FireStorageModel @Inject constructor(
         tituloActividad: String
     ): Uri {
 
+        var tituloSinEspacios = normalizarTitulo(tituloActividad)
+
         val imageRef =
-            storage.reference.child("users/$idEmpresa/$tituloActividad/imagenActividad.jpg")
+            storage.reference.child("/users/$idEmpresa/$tituloSinEspacios/imagenActividad.jpg")
+
 
         val uploadTask = imageRef.putFile(imageUri)
 
@@ -46,13 +49,22 @@ class FireStorageModel @Inject constructor(
     suspend fun getImagen(tituloActividad: String?, idEmpresa: String?): Uri? {
         var uri: Uri? = null
         try {
+            var tituloSinEspacios = normalizarTitulo(tituloActividad.toString())
             val imageRef =
-                storage.reference.child("/users/$idEmpresa/$tituloActividad/imagenActividad.jpg")
+                storage.reference.child("users/$idEmpresa/$tituloSinEspacios/imagenActividad.jpg")
+            Log.i("fernando", "Buscando en $imageRef")
             uri = imageRef.downloadUrl.await()
         } catch (e: Exception) {
             Log.e("fernando", "Error al obtener la imagen: ${e.message}")
         }
         return uri
+    }
+
+    private fun normalizarTitulo(titulo: String): String {
+        return titulo
+            .trim() // elimina espacios al principio y final
+            .replace("\\s+".toRegex(), "_") // reemplaza espacios internos por "_"
+            .lowercase() // opcional: homogéneo en minúsculas
     }
 
 

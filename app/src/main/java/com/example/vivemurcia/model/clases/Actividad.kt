@@ -15,7 +15,7 @@ val specificTimestamp = Timestamp(date)
 data class Actividad(
     @DocumentId var idActividad: String? = null, // Assuming id can be null
     val idEmpresa: String?,
-    val tituloActividad: String? = "Titulo por defecto",
+    var tituloActividad: String? = "Titulo por defecto",
     val fechaHoraActividad: Timestamp? = specificTimestamp,
     val ambienteActividad: EnumAmbiente?,
     val categoriaActividad: EnumCategories?,

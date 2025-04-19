@@ -26,6 +26,9 @@ class ViewModelDetalle @Inject constructor(
     // La que se expone al exterior para leer
     val actividad: StateFlow<Actividad?> = _actividad
 
+    var _uriImagen = MutableStateFlow<Uri?>(null)
+    val uriImagen: StateFlow<Uri?> = _uriImagen
+
     // Definimos el navController para coger el control de las pantallas
      var navController : NavController? = null
 
@@ -41,17 +44,28 @@ class ViewModelDetalle @Inject constructor(
             val idActividad : String = Uri.encode(actividad.idActividad)
             val categoriaActividad : String = Uri.encode(actividad.categoriaActividad.toString())
             navController?.navigate(Rutas.DETALLE.crearRuta(idActividad, categoriaActividad))
-
     }
 
     fun PintarActividadDetalle(idActividad: String, categoriaActividad: String?)
     {
+
         viewModelScope.launch {
-            var actividad = fireStoreModel.getSingleActivity(idActividad, categoriaActividad.toString())
+            var actividad =
+                fireStoreModel.getSingleActivity(idActividad, categoriaActividad.toString())
             _actividad.value = actividad
             _actividad.value?.idActividad = idActividad
-        }
 
+            actividad?.let {
+                _actividad.value?.uriImagen = getUriImagen(
+                    actividad.tituloActividad,
+                    actividad.idEmpresa
+                )
+            }
+        }
+    }
+
+    suspend fun getUriImagen(tituloActividad: String?, idEmpresa: String?) : Uri? {
+        return  storage.getImagen(tituloActividad, idEmpresa)
     }
 
 }
