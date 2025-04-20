@@ -3,6 +3,7 @@ package com.example.vivemurcia.model.firebase
 import android.util.Log
 import com.example.vivemurcia.data.response.ActividadResponse
 import com.example.vivemurcia.model.clases.Actividad
+import com.example.vivemurcia.model.clases.Categoria
 import com.example.vivemurcia.model.enums.EnumCategories
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Source
@@ -52,8 +53,7 @@ class FireStoreModel @Inject constructor(
                     actividad.apply { uriImagen = imageUrlDeferred.await() }
                 }
         } catch (e: Exception) {
-            // Handle cache miss
-//            Log.wtf("fernando", "Error al obtener las actividades de Firestore: ${e.message}")
+            Log.e("fernando", "Error al obtener las actividades de Firestore: ${e.message}")
             emptyList() // Return an empty list if cache is empty
         }
     }
@@ -61,12 +61,26 @@ class FireStoreModel @Inject constructor(
     // Subir actividad
     suspend fun subirActividad(actividad: Actividad): Boolean {
         return try {
-//            Log.d("fernando", "A esta categoría va: ${COLLECTION_ACTIVIDADES + "Relax"}")
             firestore.collection(COLLECTION_ACTIVIDADES + actividad.categoriaActividad).add(actividad).await()
             true
         } catch (e: Exception) {
             Log.e("fernando", "Error al subir la actividad a Firestore: ${e.message}")
             false
+        }
+    }
+
+    suspend fun getCategorias() : List<Categoria> {
+
+        return try {
+            firestore.collection("categorias").get(Source.CACHE).await().map { document ->
+                var response: Categoria = document.toObject(Categoria::class.java)
+                var categoria: Categoria = response.toDomain()
+                categoria.iconoUri = storage.getUriIcono(categoria.nombre).toString()
+                categoria
+            }
+        } catch (e: Exception) {
+            Log.e("firestore","No se pueden recoger las categorias + $e")
+            emptyList()
         }
     }
 

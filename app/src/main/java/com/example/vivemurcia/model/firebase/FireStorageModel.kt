@@ -52,7 +52,7 @@ class FireStorageModel @Inject constructor(
             var tituloSinEspacios = normalizarTitulo(tituloActividad.toString())
             val imageRef =
                 storage.reference.child("users/$idEmpresa/$tituloSinEspacios/imagenActividad.jpg")
-            Log.i("fernando", "Buscando en $imageRef")
+//            Log.i("fernando", "Buscando en $imageRef")
             uri = imageRef.downloadUrl.await()
         } catch (e: Exception) {
             Log.e("fernando", "Error al obtener la imagen: ${e.message}")
@@ -65,6 +65,22 @@ class FireStorageModel @Inject constructor(
             .trim() // elimina espacios al principio y final
             .replace("\\s+".toRegex(), "_") // reemplaza espacios internos por "_"
             .lowercase() // opcional: homogéneo en minúsculas
+    }
+
+
+    // Recuperamos una imagen
+    suspend fun getUriIcono(nombreIcono: String?): Uri? {
+        var uri: Uri? = null
+        try {
+            Log.i("tabs", "El nombre es $nombreIcono")
+            val imageRef =
+                storage.reference.child("/iconosCategorias/$nombreIcono.png")
+//            Log.i("fernando", "Buscando en $imageRef")
+            uri = imageRef.downloadUrl.await()
+        } catch (e: Exception) {
+            Log.e("fernando", "Error al obtener la uri de los iconos de tabs: ${e.message}")
+        }
+        return uri
     }
 
 

@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.vivemurcia.model.clases.Actividad
+import com.example.vivemurcia.model.enums.EnumCategories
 import com.example.vivemurcia.views.home.ActividadCard
 import com.example.vivemurcia.views.home.CircularProgressIndicatorLoader
 import com.example.vivemurcia.views.home.HomeViewModel
@@ -23,7 +24,7 @@ fun ListadoCocina(navController: NavController?) {
     val homeViewModel: HomeViewModel = hiltViewModel<HomeViewModel>()
     val viewModelDetalle : ViewModelDetalle = hiltViewModel<ViewModelDetalle>()
     // Obtenemos las actividades de Firestore
-    val actividades: List<Actividad> by homeViewModel.actividadesCocina.collectAsState()
+    val actividades: List<Actividad> by homeViewModel.actividadesPorCategoria[EnumCategories.COCINA]!!.collectAsState()
 
 //    Log.w("fernando", "Esta es la lista $actividades")
     Espaciado(16)
