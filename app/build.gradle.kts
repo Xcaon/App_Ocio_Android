@@ -60,10 +60,11 @@ dependencies {
 
     // FireStore
     implementation("com.google.firebase:firebase-firestore-ktx")
+
     //Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
     implementation(libs.firebase.auth.ktx)
-    implementation("com.google.android.gms:play-services-auth:21.2.0")
+    implementation("com.google.android.gms:play-services-auth:21.3.0")
     implementation("com.google.firebase:firebase-analytics")
     // Storage
     implementation("com.google.firebase:firebase-storage")
@@ -77,8 +78,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
     implementation("androidx.navigation:navigation-compose:2.8.9")
 
-//    // Iconos svg
-//    implementation("io.coil-kt:coil-compose:2.4.0")
 
 
     implementation(libs.androidx.core.ktx)

@@ -20,6 +20,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.vivemurcia.views.config.Inicio
 import com.example.vivemurcia.views.home.InicioHome
+import com.example.vivemurcia.viewsUser.MenuFavoritos.InicioComposableFavoritos
 import com.example.vivemurcia.viewsUser.MenuHome.pantallaDetalle.MostrarActividadDetalle
 import com.example.vivemurcia.viewsUser.MenuHome.pantallaDetalle.ViewModelDetalle
 
@@ -37,6 +38,10 @@ fun MyApp() {
             startDestination = Rutas.INICIO.nombreRuta, // Define tu pantalla inicial
             Modifier.padding(innerPadding)
         ) {
+
+            composable(Rutas.FAVORITOS.nombreRuta) {
+                InicioComposableFavoritos()
+            }
 
             // Dentro de cada ruta se pone el contenido que va a enseñar
             composable(Rutas.INICIO.nombreRuta) {

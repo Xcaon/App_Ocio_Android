@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -51,10 +52,10 @@ fun MyBottomNavigation(navController: NavHostController) {
             })
 
         NavigationBarItem(
-            selected = index == 1,
+            selected = index == 4,
             onClick = {
-                index = 1
-                navController.navigate(Rutas.RESERVAS.nombreRuta) {
+                index = 4
+                navController.navigate(Rutas.FAVORITOS.nombreRuta) {
 
                     // launchSingleTop = true indica al NavController que si la pantalla Home ya está en la
                     // parte superior del back stack, no se creará una nueva instancia. En su lugar, se reutilizará la instancia existente.
@@ -63,11 +64,11 @@ fun MyBottomNavigation(navController: NavHostController) {
                     restoreState = true
                 }
             },
-            label = { Text(fontSize = 12.sp,text = "Reservas") },
+            label = { Text(fontSize = 12.sp, text = "Favoritos") },
             icon = {
                 Icon(
-                    imageVector = Icons.Default.DateRange,
-                    contentDescription = "Reservas de la app"
+                    imageVector = Icons.Default.Star,
+                    contentDescription = "Pantalla de favoritos"
                 )
             })
 
@@ -93,6 +94,29 @@ fun MyBottomNavigation(navController: NavHostController) {
             })
 
         NavigationBarItem(
+            selected = index == 1,
+            onClick = {
+                index = 1
+                navController.navigate(Rutas.RESERVAS.nombreRuta) {
+
+                    // launchSingleTop = true indica al NavController que si la pantalla Home ya está en la
+                    // parte superior del back stack, no se creará una nueva instancia. En su lugar, se reutilizará la instancia existente.
+                    launchSingleTop = true
+                    // Restore state when reselecting a previously selected item
+                    restoreState = true
+                }
+            },
+            label = { Text(fontSize = 12.sp,text = "Reservas") },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.DateRange,
+                    contentDescription = "Reservas de la app"
+                )
+            })
+
+
+
+        NavigationBarItem(
             selected = index == 3,
             onClick = {
                 index = 3
@@ -105,13 +129,15 @@ fun MyBottomNavigation(navController: NavHostController) {
                     restoreState = true
                 }
             },
-            label = { Text(fontSize = 12.sp, text = "Configuración") },
+            label = { Text(fontSize = 12.sp, text = "Ajustes") },
             icon = {
                 Icon(
                     imageVector = Icons.Default.Settings,
                     contentDescription = "configuracion"
                 )
             })
+
+
     }
 
 

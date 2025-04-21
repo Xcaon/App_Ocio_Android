@@ -1,6 +1,8 @@
 package com.example.vivemurcia.views.home
 
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.material3.Tab
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -16,7 +18,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -38,6 +42,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -46,6 +51,7 @@ import coil.compose.AsyncImage
 import com.example.vivemurcia.model.clases.Categoria
 import com.example.vivemurcia.model.dataClass.TabItem
 import com.example.vivemurcia.ui.theme.colorNegroProyecto
+import com.example.vivemurcia.ui.theme.grisTransparente
 import com.example.vivemurcia.viewsUser.MenuHome.listadoCategoriasHome
 
 
@@ -85,13 +91,18 @@ fun InicioHome(navController: NavController) {
 fun CategoriasTab(focusManager: FocusManager,selectedTabIndexActual: Int, selectedTabIndexUpdate: (Int) -> Unit) {
 
     val viewModelHome : HomeViewModel = hiltViewModel<HomeViewModel>()
-
+    val isLoading by viewModelHome.isLoading.collectAsState()
     LaunchedEffect(Unit) {
         viewModelHome.getCategoriasTab()
     }
 
     var categorias: State<List<Categoria>> = viewModelHome.categorias.collectAsState()
-//    Log.i("fer", "Estas son las categorias $categorias")
+    Log.i("fer", "Estas son las categorias del stateFlow $categorias")
+
+    if (isLoading) {
+        CircularProgressIndicatorLoader()
+        return
+    }
 
     var tabs: List<TabItem> = categorias.value.map { categoria : Categoria ->
         TabItem(categoria.nombre.toString(), categoria.iconoUri.toString())
@@ -101,19 +112,20 @@ fun CategoriasTab(focusManager: FocusManager,selectedTabIndexActual: Int, select
         TabRow(modifier = Modifier.clickable{focusManager.clearFocus()},selectedTabIndex = selectedTabIndexActual) {
             tabs.forEachIndexed { index, title ->
                 Tab(
-                    text = { Text(fontSize = 12.sp, text = tabs[index].title) },
+                    text = { Text(fontSize = 14.sp, text = tabs[index].title) },
                     selected = selectedTabIndexActual == index, // Marcar como seleccionado
                     onClick = { selectedTabIndexUpdate(index) },
                     icon = {
                         AsyncImage(
                             model = title.icon, // aquí pones la URL o el recurso
                             contentDescription = "Icono de ${title.title}",
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(28.dp)
                         )
                     }
                 )
             }
         }
+            HorizontalDivider( thickness = 1.dp, color = grisTransparente)
     }
 
 }
@@ -162,7 +174,7 @@ fun FiltroActividades() {
             ),
         placeholder = {
             if (!isFocused && searchText.isEmpty()) {
-                Text("¿Qué te apetece este fin de semana?")
+                Text(fontSize = 16.sp ,text = "¿Qué plan te llama hoy?",overflow = TextOverflow.Ellipsis)
             }
         },
         singleLine = true,

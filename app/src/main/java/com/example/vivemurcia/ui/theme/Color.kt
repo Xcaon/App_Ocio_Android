@@ -9,6 +9,7 @@ val SoftPink = Color(0xFFFFB6B9)
 
 
 val colorNegroProyecto = Color(0xFF49454F)
+val grisTransparente = Color(0xFFE9E9E9)
 
 val fondoPantalla = Color(0xFFFFFEFC)
 val fondoPasosInfo = Color(0xFFFDEED6)

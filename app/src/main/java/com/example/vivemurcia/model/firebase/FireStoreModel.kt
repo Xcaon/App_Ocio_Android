@@ -72,7 +72,7 @@ class FireStoreModel @Inject constructor(
     suspend fun getCategorias() : List<Categoria> {
 
         return try {
-            firestore.collection("categorias").get(Source.CACHE).await().map { document ->
+            firestore.collection("/categorias").get(Source.DEFAULT).await().map { document ->
                 var response: Categoria = document.toObject(Categoria::class.java)
                 var categoria: Categoria = response.toDomain()
                 categoria.iconoUri = storage.getUriIcono(categoria.nombre).toString()

@@ -26,6 +26,7 @@ sealed class Rutas(val nombreRuta: String) {
     object DETALLE : Rutas("detalles/{idActividad}/{categoriaActividad}") {
         fun crearRuta(idActividad: String, categoriaActividad:String) = "detalles/$idActividad/$categoriaActividad"
     }
+    object FAVORITOS : Rutas("favoritos")
 }
 
 

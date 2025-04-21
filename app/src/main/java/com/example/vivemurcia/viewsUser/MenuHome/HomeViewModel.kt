@@ -23,11 +23,16 @@ class HomeViewModel @Inject constructor(
     private val fireStoreModel: FireStoreModel
 ) : ViewModel() {
 
-    init {
-        getCategoriasTab()
-    }
+    // Esto se ejecuta cada vez que se instancia el ViewModel, el problema es la recomposicion del compose
+//    init {
+//        getCategoriasTab()
+//    }
 
-    val _categorias: MutableStateFlow<List<Categoria>> = MutableStateFlow<List<Categoria>>(emptyList())
+    private val _isLoading = MutableStateFlow(true)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
+    val _categorias: MutableStateFlow<List<Categoria>> =
+        MutableStateFlow<List<Categoria>>(emptyList())
     var categorias: StateFlow<List<Categoria>> = _categorias.asStateFlow()
 
     val _actividadesPorCategoria: MutableMap<EnumCategories, MutableStateFlow<List<Actividad>>> =
@@ -50,6 +55,7 @@ class HomeViewModel @Inject constructor(
 
         // Hacemos la peticion de los datos a firebase
         viewModelScope.launch {
+            _isLoading.value = true
             try {
                 // Obtenemos las actividades de Firestore
                 nuevasActividades = fireStoreModel.getActividades(categoria)
@@ -58,7 +64,14 @@ class HomeViewModel @Inject constructor(
                 _actividadesPorCategoria[categoria]?.value = nuevasActividades
                 actividadesOriginalesPorCategoria[categoria] = nuevasActividades
 
-            } catch (e: Exception) { Log.i("fernando", "Error al obtener las actividades de aventuras 'HomeViewModel'" + e.message.toString()) }
+            } catch (e: Exception) {
+                Log.i(
+                    "fernando",
+                    "Error al obtener las actividades de aventuras 'HomeViewModel'" + e.message.toString()
+                )
+            } finally {
+                _isLoading.value = false
+            }
         }
         return nuevasActividades
     }
@@ -72,24 +85,24 @@ class HomeViewModel @Inject constructor(
                 _actividadesPorCategoria[categoria]!!.value =
                     actividadesOriginalesPorCategoria[categoria]!!
             }
-        } else { //
+        } else {
+            // TODO() Si quiero que diga que no se ha encontrado ninguna actividad debo extraer esta funcion y controlar el valor
             EnumCategories.entries.forEach { categoria ->
-                _actividadesPorCategoria[categoria]!!.value = actividadesOriginalesPorCategoria[categoria]!!.filter { actividad ->
+                _actividadesPorCategoria[categoria]!!.value =
+                    actividadesOriginalesPorCategoria[categoria]!!.filter { actividad ->
                         actividad.tituloActividad!!.contains(query, ignoreCase = true)
                     }
             }
         }
     }
 
-      fun getCategoriasTab() {
-          viewModelScope.launch {
-              var categorias: List<Categoria> = fireStoreModel.getCategorias()
-              Log.i("tabs", "Estas son las categorias: $categorias")
-              _categorias.value = categorias
-          }
+    fun getCategoriasTab() {
+        viewModelScope.launch {
+            var categorias: List<Categoria> = fireStoreModel.getCategorias()
+            Log.i("tabs", "Estas son las categorias: $categorias")
+            _categorias.value = categorias
+        }
     }
-
-
 
 
 }
