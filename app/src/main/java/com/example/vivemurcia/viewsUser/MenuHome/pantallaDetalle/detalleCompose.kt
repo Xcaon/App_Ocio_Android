@@ -20,6 +20,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,6 +36,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign.Companion.Right
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,6 +48,12 @@ import com.example.vivemurcia.R
 import javax.inject.Inject
 import androidx.core.net.toUri
 import com.example.vivemurcia.model.firebase.FireStorageModel
+import com.example.vivemurcia.ui.theme.colorNegroProyecto
+import com.example.vivemurcia.viewsCompany.ui.theme.botonNaranja
+import com.google.firebase.Timestamp
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -94,10 +102,19 @@ fun MostrarActividadDetalle(idActividad: String?, categoriaActividad: String?)  
                 fontSize = 24.sp,
                 text = actividadValue?.tituloActividad?.replaceFirstChar { it.uppercase() } ?: ""
             )
+
             Text(
                 text = "por ${actividadValue?.idEmpresa}",
                 style = TextStyle(textDecoration = TextDecoration.Underline)
             )
+            Spacer(modifier = Modifier.height(4.dp))
+            if (actividadValue?.fechaHoraActividad != null) {
+                Text(
+                    textAlign = Right,
+                    text = mostrarFechaBonita(actividadValue.fechaHoraActividad),
+                    style = TextStyle(textDecoration = TextDecoration.Underline)
+                )
+            }
             Spacer(modifier = Modifier.height(12.dp))
             Text(
                 modifier = Modifier.padding(top = 4.dp),
@@ -114,11 +131,12 @@ fun MostrarActividadDetalle(idActividad: String?, categoriaActividad: String?)  
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
                 .background(Color.White)
-                .padding(16.dp),
+                .padding( horizontal = 8.dp, vertical = 2.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Button(
                 modifier = Modifier.weight(1f),
+                colors = ButtonColors(botonNaranja, Color.White, botonNaranja, botonNaranja) ,
                 onClick = {
                     val intent = Intent(Intent.ACTION_VIEW,
                         actividadValue?.localizacionActividad?.toUri()
@@ -137,10 +155,17 @@ fun MostrarActividadDetalle(idActividad: String?, categoriaActividad: String?)  
             }
         }
     }
+}
 
+fun mostrarFechaBonita(fecha: Timestamp) : String {
+    // Fecha y hora
+    val timestamp: Timestamp = fecha // de Firebase
+    val calendar = Calendar.getInstance().apply {
+        time = timestamp.toDate()
+    }
+    val formato = SimpleDateFormat("d MMMM", Locale("es", "ES"))
 
-
-
+    return formato.format(calendar.time)
 }
 
 

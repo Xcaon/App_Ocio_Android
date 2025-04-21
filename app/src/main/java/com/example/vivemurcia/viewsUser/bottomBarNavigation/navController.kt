@@ -16,6 +16,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.vivemurcia.views.config.Inicio
@@ -29,8 +30,23 @@ fun MyApp() {
     // Establecemos el controlador de navegación, esto es el inicio de all
     val navController = rememberNavController()
 
+    val navBackStackEntry = navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry.value?.destination?.route
+
     Scaffold(
-        bottomBar = { MyBottomNavigation(navController) }
+        bottomBar = {
+            if (currentRoute in listOf(
+                    Rutas.INICIO.nombreRuta,
+                    Rutas.FAVORITOS.nombreRuta,
+                    Rutas.RESERVAS.nombreRuta,
+                    Rutas.SEGUIDOS.nombreRuta,
+                    Rutas.CONFIGURACION.nombreRuta
+                )
+            ) {
+                MyBottomNavigation(navController)
+            }
+        }
+
     ) { innerPadding ->
 
         NavHost(
