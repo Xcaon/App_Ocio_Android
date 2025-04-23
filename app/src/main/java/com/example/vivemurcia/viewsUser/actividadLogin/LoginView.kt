@@ -115,9 +115,9 @@ class LoginView : ComponentActivity() {
                     Log.d(TAG, "signInWithCredential:success")
 
                     // Obtener el usuario actual, aqui podemos obtener los diferentes datos
-                    val user = auth.currentUser?.displayName
+                    val userIdToken = auth.currentUser?.uid
 
-                    siguientePantalla(this, user)
+                    siguientePantalla(this, userIdToken)
 
                 } else {
                     // If sign in fails, display a message to the user.
@@ -128,18 +128,21 @@ class LoginView : ComponentActivity() {
 
 }
 
-fun siguientePantalla(context : Context, user: String?) {
+fun siguientePantalla(context : Context, userIdToken: String?) {
 
-    if (PreferencesConfig.comprobarInfoVisto(false, context)) {
-        val intent = Intent(context, InfoView::class.java)
-        intent.putExtra("user", user)
-        (context as? Activity)?.startActivity(intent)
-    } else {
+
+
+    if (PreferencesConfig.comprobarInfoVisto(context)) {
         PreferencesConfig.preferenceSwitchValue(true, context)
         val intent = Intent(context, HomeView::class.java)
-        intent.putExtra("user", user)
+        intent.putExtra("user", userIdToken)
+        (context as? Activity)?.startActivity(intent)
+    } else {
+        val intent = Intent(context, InfoView::class.java)
+        intent.putExtra("user", userIdToken)
         (context as? Activity)?.startActivity(intent)
     }
+
 }
 
 

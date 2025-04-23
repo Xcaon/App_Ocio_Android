@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -42,7 +44,7 @@ import com.example.vivemurcia.ui.theme.fondoPasosInfo
 import com.example.vivemurcia.ui.theme.textoNaranja
 
 @Composable
-fun Textoinicial(onclick : () -> Unit ) {
+fun Textoinicial(onclick: () -> Unit) {
     Box(
         Modifier
             .fillMaxSize()
@@ -56,7 +58,7 @@ fun Textoinicial(onclick : () -> Unit ) {
 
 
 @Composable
-fun Contenido(onclick : () -> Unit ) {
+fun Contenido(onclick: () -> Unit) {
 
     Column() {
         Box(
@@ -79,7 +81,8 @@ fun Contenido(onclick : () -> Unit ) {
                     "¡Personaliza tus notificaciones!",
                     fontFamily = FontFamily(Font(R.font.notosansbold)),
                     color = colorNegroProyecto,
-                    fontSize = 24.sp
+                    fontSize = 22.sp,
+                    maxLines = 1
                 )
                 Text(
                     "Aprende a seguir tus locales y actividades favoritas",
@@ -186,7 +189,7 @@ fun Contenido(onclick : () -> Unit ) {
                                 }
                                 Text(
                                     text =
-                                    "Encuentra tu local favorito",
+                                        "Encuentra tu local favorito",
                                     Modifier.padding(start = 8.dp),
                                     fontFamily = FontFamily(Font(R.font.notosanssemibold))
                                 )
@@ -250,7 +253,7 @@ fun Contenido(onclick : () -> Unit ) {
                                 }
                                 Text(
                                     text =
-                                    "Pulsa “Seguir”",
+                                        "Pulsa “Seguir”",
                                     Modifier.padding(start = 8.dp),
                                     fontFamily = FontFamily(Font(R.font.notosanssemibold))
                                 )
@@ -314,7 +317,7 @@ fun Contenido(onclick : () -> Unit ) {
                                 }
                                 Text(
                                     text =
-                                    "¡Listo!",
+                                        "¡Listo!",
                                     Modifier.padding(start = 8.dp),
                                     fontFamily = FontFamily(Font(R.font.notosanssemibold))
                                 )
@@ -329,7 +332,8 @@ fun Contenido(onclick : () -> Unit ) {
             Modifier
                 .weight(1.5f)
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp)
+                .clip(
+                    RoundedCornerShape(16.dp)
                 )
         ) {
             Surface(
@@ -353,39 +357,37 @@ fun Contenido(onclick : () -> Unit ) {
                 ) {
                     Text(
                         text =
-                        "¡Empieza a explorar y sigue tus lugares favoritos!\n" +
-                                "Personaliza tu experiencia y mantente al día de todo lo que suce en tu ciudada",
+                            "¡Empieza a explorar tus lugares favoritos!\n\n" +
+                                    "Personaliza tu experiencia y mantente al día de todo lo que suce en tu ciudada",
                         fontFamily = FontFamily(Font(R.font.notosanssemibold)),
                         color = Color.White,
                         fontSize = 15.sp,
                         lineHeight = 18.sp,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    Button(
-                        enabled = true,
-                        onClick = { onclick() },
-                        contentPadding = PaddingValues(16.dp),
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                            containerColor = Color.White
+
+                    Row(
+                        modifier = Modifier
+                            .background(Color.White)
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(32.dp)).clickable{onclick()},
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    )
+                    {
+                        Text(
+                            text = "Comenzar a explorar",
+                            fontFamily = FontFamily(Font(R.font.notosansbold)),
+                            color = colorNegroProyecto,
+                            fontSize = 16.sp
                         )
-                    ) {
-                        Row {
-                            Text(
-                                text = "Comenzar a explorar",
-                                fontFamily = FontFamily(Font(R.font.notosansbold)),
-                                color = textoNaranja,
-                                fontSize = 16.sp
-                            )
-                            val painter =
-                                painterResource(id = R.drawable.icarrow) // Reemplaza con el nombre de tu vector
-                            Icon(
-                                painter = painter,
-                                contentDescription = "Flecha",
-                                tint = Color.Unspecified // Mantén el color original del vector
-                            )
-                        }
+                        val painter =
+                            painterResource(id = R.drawable.icarrow) // Reemplaza con el nombre de tu vector
+                        Icon(
+                            painter = painter,
+                            contentDescription = "Flecha",
+                            tint = Color.Unspecified // Mantén el color original del vector
+                        )
                     }
                 }
             }
