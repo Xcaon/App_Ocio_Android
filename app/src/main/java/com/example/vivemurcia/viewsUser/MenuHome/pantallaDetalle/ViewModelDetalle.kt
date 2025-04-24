@@ -1,16 +1,17 @@
 package com.example.vivemurcia.viewsUser.MenuHome.pantallaDetalle
 
+import android.content.Context
 import android.net.Uri
-import android.util.Log
-import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.vivemurcia.model.clases.Actividad
 import com.example.vivemurcia.model.firebase.FireStorageModel
 import com.example.vivemurcia.model.firebase.FireStoreModel
+import com.example.vivemurcia.model.sharedPreferences.PreferencesConfig.getUserId
 import com.example.vivemurcia.views.bottomBar.Rutas
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -19,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ViewModelDetalle @Inject constructor(
     private val fireStoreModel: FireStoreModel,
-    private val storage: FireStorageModel
+    private val storage: FireStorageModel,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     var _actividad = MutableStateFlow<Actividad?>(null)
@@ -68,4 +70,11 @@ class ViewModelDetalle @Inject constructor(
         return  storage.getImagen(tituloActividad, idEmpresa)
     }
 
+    fun addActividadListaFavoritos(idActividad: String?) {
+     fireStoreModel.subirActividadListaFavoritos(idActividad, getUserId(context))
+    }
+
+
+
 }
+

@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -44,7 +46,7 @@ import com.example.vivemurcia.ui.theme.fondoPasosInfo
 import com.example.vivemurcia.ui.theme.textoNaranja
 
 @Composable
-fun Textoinicial(onclick: () -> Unit) {
+fun InicioComposableInfoView(onclick: () -> Unit) {
     Box(
         Modifier
             .fillMaxSize()
@@ -100,8 +102,8 @@ fun Contenido(onclick: () -> Unit) {
 
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
-                elevation = CardDefaults.cardElevation(12.dp),
+                    .padding(horizontal = 8.dp, vertical = 8.dp),
+                elevation = CardDefaults.cardElevation(4.dp),
                 shape = MaterialTheme.shapes.medium,
                 colors = CardDefaults.cardColors(
                     containerColor = Color.White
@@ -145,9 +147,7 @@ fun Contenido(onclick: () -> Unit) {
             Card(
                 onClick = {}, modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
-                elevation = CardDefaults.cardElevation(12.dp),
-                shape = MaterialTheme.shapes.medium,
+                    .padding(horizontal = 8.dp, vertical = 8.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = Color.White
                 )
@@ -208,9 +208,7 @@ fun Contenido(onclick: () -> Unit) {
             Card(
                 onClick = {}, modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
-                elevation = CardDefaults.cardElevation(12.dp),
-                shape = MaterialTheme.shapes.medium,
+                    .padding(horizontal = 8.dp, vertical = 8.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = Color.White
                 )
@@ -272,9 +270,7 @@ fun Contenido(onclick: () -> Unit) {
             Card(
                 onClick = {}, modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
-                elevation = CardDefaults.cardElevation(12.dp),
-                shape = MaterialTheme.shapes.medium,
+                    .padding(horizontal = 8.dp, vertical = 8.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = Color.White
                 )
@@ -328,6 +324,7 @@ fun Contenido(onclick: () -> Unit) {
                 }
             }
         }
+        Spacer(modifier = Modifier.height(16.dp))
         Box(
             Modifier
                 .weight(1.5f)

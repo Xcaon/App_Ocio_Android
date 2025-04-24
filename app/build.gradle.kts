@@ -46,8 +46,7 @@ android {
 
 dependencies {
 
-    // PlaceHolder Material
-
+    implementation("androidx.datastore:datastore-preferences:1.1.5")
 
     // Coil
     implementation("io.coil-kt:coil-compose:2.4.0")

@@ -2,7 +2,6 @@
 
 package com.example.vivemurcia.views.login
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -11,7 +10,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.lifecycleScope
 import com.example.vivemurcia.model.sharedPreferences.PreferencesConfig
+import com.example.vivemurcia.model.sharedPreferences.PreferencesConfig.savePreferences
 import com.example.vivemurcia.ui.theme.VivemurciaTheme
 import com.example.vivemurcia.views.home.HomeView
 import com.example.vivemurcia.viewsUser.actividadInfo.InfoView
@@ -23,7 +24,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-
+import kotlinx.coroutines.launch
 
 class LoginView : ComponentActivity() {
 
@@ -37,10 +38,6 @@ class LoginView : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
-        // Configuramos las preferencias de la app, mirar si hay algún fichero donde lo ejecute
-        PreferencesConfig.preferenceSwitchValue(false, this)
-
         // Configure Google Sign In, Esto lanza la actividad de inicio de sesion de google
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(
@@ -56,10 +53,15 @@ class LoginView : ComponentActivity() {
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
         // Initialize Firebase Auth
+        // Si el usuario ya existe entramos directamente al Home o donde corresponda,
+        // sino iniciamos el proceso
         auth = FirebaseAuth.getInstance()
-        val usuarioActual = FirebaseAuth.getInstance().currentUser
+        val usuarioActual = auth.currentUser
         if (usuarioActual != null) {
-            siguientePantalla(this, usuarioActual.displayName)
+            lifecycleScope.launch {
+                val intent = Intent(this@LoginView, HomeView::class.java)
+                this@LoginView.startActivity(intent)
+            }
             overridePendingTransition(android.R.anim.fade_out, android.R.anim.fade_in)
         } else {
             setContent {
@@ -71,7 +73,6 @@ class LoginView : ComponentActivity() {
             }
         }
     }
-
 
     private fun signIn() {
         val signInIntent = googleSignInClient.signInIntent
@@ -87,13 +88,10 @@ class LoginView : ComponentActivity() {
                 val task: Task<GoogleSignInAccount> =
                     GoogleSignIn.getSignedInAccountFromIntent(result.data)
                 try {
-                    Log.i("fernando", "El resultado es Ok")
                     // Google Sign In was successful, authenticate with Firebase
                     val account = task.getResult(ApiException::class.java)!!
-                    Log.d(TAG, "firebaseAuthWithGoogle:" + account.id)
                     firebaseAuthWithGoogle(account.idToken!!)
                 } catch (e: ApiException) {
-                    // Google Sign In failed, update UI appropriately
                     Log.w(TAG, "Google sign in failed", e)
                 }
             } else {
@@ -112,13 +110,14 @@ class LoginView : ComponentActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "signInWithCredential:success")
+//                    Log.i(TAG, "signInWithCredential:success")
 
                     // Obtener el usuario actual, aqui podemos obtener los diferentes datos
-                    val userIdToken = auth.currentUser?.uid
+                    val userIdToken: String = auth.currentUser?.uid!!
 
-                    siguientePantalla(this, userIdToken)
-
+                    lifecycleScope.launch {
+                        pantallaInfo(this@LoginView, userIdToken)
+                    }
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "signInWithCredential:failure", task.exception)
@@ -126,26 +125,12 @@ class LoginView : ComponentActivity() {
             }
     }
 
-}
-
-fun siguientePantalla(context : Context, userIdToken: String?) {
-
-
-
-    if (PreferencesConfig.comprobarInfoVisto(context)) {
-        PreferencesConfig.preferenceSwitchValue(true, context)
-        val intent = Intent(context, HomeView::class.java)
-        intent.putExtra("user", userIdToken)
-        (context as? Activity)?.startActivity(intent)
-    } else {
+    fun pantallaInfo(context: Context, userIdToken: String) {
+        savePreferences(context, userIdToken, true)
         val intent = Intent(context, InfoView::class.java)
-        intent.putExtra("user", userIdToken)
-        (context as? Activity)?.startActivity(intent)
+        context.startActivity(intent)
     }
-
 }
-
-
 
 
 

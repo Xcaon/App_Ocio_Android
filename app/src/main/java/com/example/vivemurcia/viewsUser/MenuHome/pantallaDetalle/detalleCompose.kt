@@ -1,11 +1,7 @@
 package com.example.vivemurcia.viewsUser.MenuHome.pantallaDetalle
 
 import android.content.Intent
-import android.net.Uri
-import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,10 +10,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
+
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -27,7 +22,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -43,12 +37,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
 import com.example.vivemurcia.R
-import javax.inject.Inject
 import androidx.core.net.toUri
-import com.example.vivemurcia.model.firebase.FireStorageModel
-import com.example.vivemurcia.ui.theme.colorNegroProyecto
 import com.example.vivemurcia.viewsCompany.ui.theme.botonNaranja
 import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
@@ -149,7 +139,9 @@ fun MostrarActividadDetalle(idActividad: String?, categoriaActividad: String?)  
 
             Button(
                 modifier = Modifier.weight(1f),
-                onClick = { /* Guardar acción */ }
+                onClick = {
+                    viewModelDetalle.addActividadListaFavoritos(idActividad)
+                }
             ) {
                 Text(text = "Guardar")
             }

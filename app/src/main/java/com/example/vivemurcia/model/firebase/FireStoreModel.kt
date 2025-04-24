@@ -5,6 +5,7 @@ import com.example.vivemurcia.data.response.ActividadResponse
 import com.example.vivemurcia.model.clases.Actividad
 import com.example.vivemurcia.model.clases.Categoria
 import com.example.vivemurcia.model.enums.EnumCategories
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Source
 import kotlinx.coroutines.CoroutineScope
@@ -82,6 +83,42 @@ class FireStoreModel @Inject constructor(
             Log.e("firestore","No se pueden recoger las categorias + $e")
             emptyList()
         }
+    }
+
+    fun subirActividadListaFavoritos(idActividad: String?, userId: String?)  {
+        val firestore = FirebaseFirestore.getInstance()
+        val ref = firestore.collection("usuarios").document(userId.toString())
+
+        ref.get()
+            .addOnSuccessListener { document ->
+                if (!document.exists()) {
+                    // Documento no existe, lo creamos con el array
+                    val datosIniciales = mapOf(
+                        "actividadesFavoritasIds" to listOf(idActividad)
+                    )
+
+                    ref.set(datosIniciales)
+                        .addOnSuccessListener {
+                            Log.d("fernando", "Documento creado y favorito añadido")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("fernando", "Error al crear documento: ${e.message}")
+                        }
+                } else {
+                    // Documento ya existe, solo hacemos update
+                    ref.update("actividadesFavoritasIds", FieldValue.arrayUnion(idActividad))
+                        .addOnSuccessListener {
+                            Log.d("fernando", "Favorito añadido al documento existente")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("fernando", "Error al añadir favorito: ${e.message}")
+                        }
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("fernando", "Error al comprobar existencia del documento: ${e.message}")
+            }
+
     }
 
 
