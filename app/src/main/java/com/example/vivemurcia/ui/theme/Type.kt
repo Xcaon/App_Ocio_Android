@@ -14,7 +14,7 @@ import com.example.vivemurcia.R
 val Typography = Typography(
 
     displayLarge = TextStyle (
-        fontFamily = FontFamily.Default,
+        fontFamily = FontFamily(Font(R.font.plusjakartasansmedium)),
         fontWeight = FontWeight.Normal,
         fontSize = 24.sp,
         lineHeight = 0.sp,
@@ -28,8 +28,9 @@ val Typography = Typography(
         letterSpacing = 0.5.sp
 
     ),
+
     bodySmall = TextStyle (
-        fontFamily = FontFamily(Font(R.font.notosansregular)),
+        fontFamily = FontFamily(Font(R.font.plusjakartasansmedium)),
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
         lineHeight = 18.sp,

@@ -21,6 +21,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.vivemurcia.views.config.Inicio
 import com.example.vivemurcia.views.home.InicioHome
+import com.example.vivemurcia.viewsUser.MenuBuscador.InicioBuscador
 import com.example.vivemurcia.viewsUser.MenuFavoritos.InicioComposableFavoritos
 import com.example.vivemurcia.viewsUser.MenuHome.pantallaDetalle.MostrarActividadDetalle
 import com.example.vivemurcia.viewsUser.MenuHome.pantallaDetalle.ViewModelDetalle
@@ -38,6 +39,7 @@ fun MyApp() {
             if (currentRoute in listOf(
                     Rutas.INICIO.nombreRuta,
                     Rutas.FAVORITOS.nombreRuta,
+                    Rutas.BUSCADOR.nombreRuta,
                     Rutas.RESERVAS.nombreRuta,
                     Rutas.SEGUIDOS.nombreRuta,
                     Rutas.CONFIGURACION.nombreRuta
@@ -56,7 +58,7 @@ fun MyApp() {
         ) {
 
             composable(Rutas.FAVORITOS.nombreRuta) {
-                InicioComposableFavoritos()
+                InicioComposableFavoritos(navController)
             }
 
             // Dentro de cada ruta se pone el contenido que va a enseñar
@@ -65,26 +67,8 @@ fun MyApp() {
                 InicioHome(navController)
             }
 
-            composable(Rutas.RESERVAS.nombreRuta) {
-                Column(
-                    Modifier
-                        .fillMaxSize()
-                        .background(Color.Green),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text("Esto son las reservas")
-                }
-            }
-
-            composable(Rutas.SEGUIDOS.nombreRuta) {
-                Column(
-                    Modifier
-                        .fillMaxSize()
-                        .background(Color.Red),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text("Esto son los seguidos")
-                }
+            composable(Rutas.BUSCADOR.nombreRuta) {
+                InicioBuscador()
             }
 
             composable(Rutas.CONFIGURACION.nombreRuta) {
@@ -104,12 +88,36 @@ fun MyApp() {
                     navArgument("categoriaActividad") { type = NavType.StringType }
                 )) { NavBackStackEntry ->
 
-                    val idActividad = NavBackStackEntry.arguments?.getString("idActividad")
-                    val categoriaActividad = NavBackStackEntry.arguments?.getString("categoriaActividad")
+                val idActividad = NavBackStackEntry.arguments?.getString("idActividad")
+                val categoriaActividad = NavBackStackEntry.arguments?.getString("categoriaActividad")
 
-                    MostrarActividadDetalle(idActividad, categoriaActividad)
+                MostrarActividadDetalle(idActividad, categoriaActividad)
 
             }
+
+//            composable(Rutas.RESERVAS.nombreRuta) {
+//                Column(
+//                    Modifier
+//                        .fillMaxSize()
+//                        .background(Color.Green),
+//                    verticalArrangement = Arrangement.Center
+//                ) {
+//                    Text("Esto son las reservas")
+//                }
+//            }
+
+//            composable(Rutas.SEGUIDOS.nombreRuta) {
+//                Column(
+//                    Modifier
+//                        .fillMaxSize()
+//                        .background(Color.Red),
+//                    verticalArrangement = Arrangement.Center
+//                ) {
+//                    Text("Esto son los seguidos")
+//                }
+//            }
+
+
 
         }
 

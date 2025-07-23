@@ -25,6 +25,7 @@
             android:exported="false"
             android:label="@string/title_activity_create"
             android:theme="@style/Theme.Vivemurcia">
+
         </activity>
         <activity
             android:name=".viewsUser.actividadInfo.InfoView"

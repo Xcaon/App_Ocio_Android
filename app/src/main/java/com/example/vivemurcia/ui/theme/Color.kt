@@ -15,6 +15,9 @@ val fondoPantalla = Color(0xFFFFFEFC)
 val fondoPasosInfo = Color(0xFFFDEED6)
 val textoNaranja = Color(0xFFE5611B)
 
+val colorCategoria = Color(0xFF4A739C)
+
+
 
 
 

@@ -2,6 +2,7 @@ package com.example.vivemurcia.views.home
 
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -13,6 +14,8 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,12 +33,14 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -53,12 +58,17 @@ import java.util.Calendar
 import java.util.Locale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
+import com.example.vivemurcia.R
+import com.example.vivemurcia.ui.theme.colorCategoria
 
 
 @AndroidEntryPoint
@@ -76,15 +86,9 @@ class HomeView : ComponentActivity() {
 
 // Como se pintara cada actividad, es decir, cada card
 @Composable
-fun ActividadCard(actividad: Actividad, onClickActividad: (Actividad) -> Unit) {
+fun ActividadCardCuadrada(actividad: Actividad, onClickActividad: (Actividad) -> Unit) {
 
-    // oye, Compose, prepara esta imagen desde una URL (o recurso local) y dame el estado para que yo lo gestione
-    val painter = rememberAsyncImagePainter(model = actividad.uriImagen)
-    // Miramos el estado actual de la imagen
-    val imageState = painter.state
-    // Cambiamos la variable de valor si el estado de la imagen ya esta subido
-    val cargando : Boolean = imageState is AsyncImagePainter.State.Loading
-
+    val cargando = remember { mutableStateOf(true) }
     // Fecha y hora
     val timestamp: Timestamp = actividad.fechaHoraActividad!! // de Firebase
     val calendar = Calendar.getInstance().apply {
@@ -93,51 +97,126 @@ fun ActividadCard(actividad: Actividad, onClickActividad: (Actividad) -> Unit) {
     val formato = SimpleDateFormat("d MMMM", Locale("es", "ES"))
     val fechaBonita = formato.format(calendar.time)
 
-    Card(
-        border = BorderStroke(0.2.dp, fondoPantalla),
+    Column(
         modifier = Modifier
-            .width(200.dp)
-            .padding(4.dp).background(Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        onClick = {
-            // Aqui  lanzamos el proceso para enseñar la actividad
-            onClickActividad(actividad)
-        }
+            .width(256.dp)
+            .height(256.dp)
+            .clickable {
+                onClickActividad(actividad)
+            }
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
-                .background( if (cargando) shimmerBrush()  else SolidColor(Color.Transparent) )
+                .height(150.dp)
+                .background(if (cargando.value) shimmerBrush() else SolidColor(Color.Transparent))
+                .border(4.dp, Color.Transparent, RoundedCornerShape(16.dp))
         ) {
             AsyncImage(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(12.dp))
+                    .fillMaxWidth(),
                 model = actividad.uriImagen,
-                contentDescription = "SuperHero Avatar",
-                modifier = Modifier.fillMaxWidth(),
-                contentScale = ContentScale.Crop
-                )
+                contentDescription = "Actividad",
+                contentScale = ContentScale.Crop,
+                onState = { it: AsyncImagePainter.State ->
+                    if (it is AsyncImagePainter.State.Success) {
+                        cargando.value = false
+                    }
+                }
+            )
         }
 
         // Datos: Titulo y fecha de la actividad
         Column(
-            modifier = Modifier.padding(
-                8.dp, 8.dp, 8.dp, 2.dp
-            )
+            modifier = Modifier
+                .padding(
+                    8.dp, 8.dp, 8.dp, 2.dp
+                )
+                .height(50.dp)
         ) {
-                Text(
-                    style = MaterialTheme.typography.bodySmall,
-                    fontSize = 16.sp,
-                    text = actividad.tituloActividad!!.replaceFirstChar { it.uppercase() },
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis)
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(fontSize = 14.sp, text = "$fechaBonita")
-                Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                style = MaterialTheme.typography.bodySmall,
+                fontSize = 12.sp,
+                text = actividad.tituloActividad!!.replaceFirstChar { it.uppercase() },
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(color = colorCategoria, fontFamily = FontFamily(Font(R.font.plusjakartasansregular)), fontSize = 10.sp, text = actividad.categoriaActividad.toString())
+            Spacer(modifier = Modifier.height(4.dp))
 
         }
     }
 }
 
+// Como se pintara cada actividad, es decir, cada card
+@Composable
+fun ActividadCard(actividad: Actividad, onClickActividad: (Actividad) -> Unit) {
+    val cargando = remember { mutableStateOf(true) }
+    // Fecha y hora
+    val timestamp: Timestamp = actividad.fechaHoraActividad!! // de Firebase
+//    val calendar = Calendar.getInstance().apply {
+//        time = timestamp.toDate()
+//    }
+//    val formato = SimpleDateFormat("d MMMM", Locale("es", "ES"))
+//    val fechaBonita = formato.format(calendar.time)
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val tarjetaAncho = (screenWidth - 32.dp) / 2
+
+    Column(
+        modifier = Modifier
+            .width(tarjetaAncho)
+            .height(200.dp)
+            .padding(4.dp)
+            .clickable {
+                onClickActividad(actividad)
+            }
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(125.dp)
+                .background(if (cargando.value) shimmerBrush() else SolidColor(Color.Transparent))
+                .border(4.dp, Color.Transparent, RoundedCornerShape(12.dp)).clip(RoundedCornerShape(12.dp))
+        ) {
+            AsyncImage(
+                model = actividad.uriImagen,
+                contentDescription = "Imagen actividad",
+                modifier = Modifier.fillMaxWidth(),
+                contentScale = ContentScale.Crop,
+                onState = { it: AsyncImagePainter.State ->
+                    if (it is AsyncImagePainter.State.Success) {
+                        cargando.value = false
+                    }
+                }
+            )
+        }
+
+        // Datos: Titulo y fecha de la actividad
+        Column(
+            modifier = Modifier
+                .padding(
+                    8.dp, 8.dp, 8.dp, 2.dp
+                )
+                .height(50.dp)
+        ) {
+            Text(
+                fontFamily = FontFamily(Font(R.font.plusjakartasansmedium)),
+                fontSize = 12.sp,
+                lineHeight = 12.sp,
+                text = actividad.tituloActividad!!.replaceFirstChar { it.uppercase() },
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(color = colorCategoria, fontFamily = FontFamily(Font(R.font.plusjakartasansregular)), fontSize = 10.sp, text = actividad.categoriaActividad.toString())
+            Spacer(modifier = Modifier.height(4.dp))
+        }
+    }
+}
+
+// Un Brush es un objeto que define cómo rellenar gráficamente una superficie
 @Composable
 fun shimmerBrush(): Brush {
     val shimmerColors = listOf(

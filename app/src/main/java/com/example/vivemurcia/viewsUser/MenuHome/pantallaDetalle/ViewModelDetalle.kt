@@ -25,6 +25,7 @@ class ViewModelDetalle @Inject constructor(
 ) : ViewModel() {
 
     var _actividad = MutableStateFlow<Actividad?>(null)
+
     // La que se expone al exterior para leer
     val actividad: StateFlow<Actividad?> = _actividad
 
@@ -32,7 +33,7 @@ class ViewModelDetalle @Inject constructor(
     val uriImagen: StateFlow<Uri?> = _uriImagen
 
     // Definimos el navController para coger el control de las pantallas
-     var navController : NavController? = null
+    var navController: NavController? = null
 
 
     // Hay que llamar siempre antes a esta funcion
@@ -43,13 +44,17 @@ class ViewModelDetalle @Inject constructor(
     }
 
     fun mostrarActividadDetalle(actividad: Actividad) {
-            val idActividad : String = Uri.encode(actividad.idActividad)
-            val categoriaActividad : String = Uri.encode(actividad.categoriaActividad.toString())
+        try {
+            val idActividad: String = Uri.encode(actividad.idActividad)
+            val categoriaActividad: String = Uri.encode(actividad.categoriaActividad.toString())
             navController?.navigate(Rutas.DETALLE.crearRuta(idActividad, categoriaActividad))
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
     }
 
-    fun PintarActividadDetalle(idActividad: String, categoriaActividad: String?)
-    {
+    fun PintarActividadDetalle(idActividad: String, categoriaActividad: String?) {
 
         viewModelScope.launch {
             var actividad =
@@ -66,14 +71,21 @@ class ViewModelDetalle @Inject constructor(
         }
     }
 
-    suspend fun getUriImagen(tituloActividad: String?, idEmpresa: String?) : Uri? {
-        return  storage.getImagen(tituloActividad, idEmpresa)
+    suspend fun getUriImagen(tituloActividad: String?, idEmpresa: String?): Uri? {
+        return storage.getImagen(tituloActividad, idEmpresa)
     }
 
-    fun addActividadListaFavoritos(idActividad: String?) {
-     fireStoreModel.subirActividadListaFavoritos(idActividad, getUserId(context))
-    }
+    fun addActividadListaFavoritos(idActividad: String?, categoriaActividad: String?) {
 
+        viewModelScope.launch {
+            fireStoreModel.subirActividadListaFavoritos(
+                idActividad,
+                getUserId(context),
+                categoriaActividad
+            )
+        }
+
+    }
 
 
 }

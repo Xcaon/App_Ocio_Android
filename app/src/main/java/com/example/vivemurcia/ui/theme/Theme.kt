@@ -20,19 +20,20 @@ private val DarkColorScheme = darkColorScheme(
     surface = colorNegroProyecto,
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = colorPrimario,
+private val LightColorSchemePersonalizado = lightColorScheme(
+    primary = Color.White,
     secondary = Color.Black,
     background = fondoPantalla,
     onBackground = colorNegroProyecto,
     surface = Color.White,
+    onSurface = colorNegroProyecto,
 )
 
 @Composable
 fun VivemurciaTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -41,7 +42,7 @@ fun VivemurciaTheme(
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
         darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        else -> LightColorSchemePersonalizado
     }
 
 

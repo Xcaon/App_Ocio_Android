@@ -1,109 +1,44 @@
 package com.example.vivemurcia.views.home
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vivemurcia.model.clases.Actividad
-import com.example.vivemurcia.model.clases.Categoria
-import com.example.vivemurcia.model.enums.EnumCategories
 import com.example.vivemurcia.model.firebase.FireStoreModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.collections.filter
-import kotlin.text.contains
-import kotlin.text.isBlank
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val fireStoreModel: FireStoreModel
 ) : ViewModel() {
 
-    // Esto se ejecuta cada vez que se instancia el ViewModel, el problema es la recomposicion del compose
-//    init {
-//        getCategoriasTab()
-//    }
+    var _actividadesDestacadas = MutableStateFlow<List<Actividad>>(emptyList())
+    val actividadesDestacadas = _actividadesDestacadas.asStateFlow()
 
-    private val _isLoading = MutableStateFlow(true)
-    val isLoading: StateFlow<Boolean> = _isLoading
+    var _actividadesTodas = MutableStateFlow<List<Actividad>>(emptyList())
+    val actividadesTodas = _actividadesTodas.asStateFlow()
 
-    val _categorias: MutableStateFlow<List<Categoria>> =
-        MutableStateFlow<List<Categoria>>(emptyList())
-    var categorias: StateFlow<List<Categoria>> = _categorias.asStateFlow()
-
-    val _actividadesPorCategoria: MutableMap<EnumCategories, MutableStateFlow<List<Actividad>>> =
-        EnumCategories.entries.associateWith { categoria ->
-            MutableStateFlow<List<Actividad>>(getActividadesFlow(categoria))
-        }.toMutableMap()
-
-    val actividadesPorCategoria: Map<EnumCategories, StateFlow<List<Actividad>>> =
-        _actividadesPorCategoria.mapValues { it.value.asStateFlow() }
-
-    private val actividadesOriginalesPorCategoria: MutableMap<EnumCategories, List<Actividad>> =
-        EnumCategories.entries.associateWith {
-            emptyList<Actividad>()
-        }.toMutableMap()
-
-    fun getActividadesFlow(categoria: EnumCategories): List<Actividad> {
-
-        // Actividad vacia para rellenarla con la petición a Firestore
-        var nuevasActividades: List<Actividad> = emptyList<Actividad>()
-
-        // Hacemos la peticion de los datos a firebase
+    fun getActividadesDestacadas() {
         viewModelScope.launch {
-            _isLoading.value = true
-            try {
-                // Obtenemos las actividades de Firestore
-                nuevasActividades = fireStoreModel.getActividades(categoria)
 
-                // Actualizamos el listado de cada categoria
-                _actividadesPorCategoria[categoria]?.value = nuevasActividades
-                actividadesOriginalesPorCategoria[categoria] = nuevasActividades
+            // Le decimos que destacadas queremos
+            var listaPeticion : List<String> = listOf("sCvtbUBSG6EE80RzRMYg", "3gFXlXwKzOg4Z6reHbOf", "937fEpccGoduIraSF48k", "MhzDNdqort8yIlsDvLqY", "Ue518MOgVtRF2PZr2eBp")
+            // Hacemos la peticion a fireStore
+            var destacadas = fireStoreModel.getDestacadas(listaPeticion)
 
-            } catch (e: Exception) {
-                Log.i(
-                    "fernando",
-                    "Error al obtener las actividades de aventuras 'HomeViewModel'" + e.message.toString()
-                )
-            } finally {
-                _isLoading.value = false
-            }
-        }
-        return nuevasActividades
-    }
-
-
-    // PENDIENTE DE ADAPTAR CON TODOS LOS FILTROS
-    // Actualizar actividades según el filtro
-    fun filterActividades(query: String) {
-        if (query.isBlank()) { // Si no se inserta nada o se reinicia cargamos todos las actividades originales
-            EnumCategories.entries.forEach { categoria ->
-                _actividadesPorCategoria[categoria]!!.value =
-                    actividadesOriginalesPorCategoria[categoria]!!
-            }
-        } else {
-            // TODO() Si quiero que diga que no se ha encontrado ninguna actividad debo extraer esta funcion y controlar el valor
-            EnumCategories.entries.forEach { categoria ->
-                _actividadesPorCategoria[categoria]!!.value =
-                    actividadesOriginalesPorCategoria[categoria]!!.filter { actividad ->
-                        actividad.tituloActividad!!.contains(query, ignoreCase = true)
-                    }
-            }
+            _actividadesDestacadas.value = destacadas
         }
     }
 
-    fun getCategoriasTab() {
+
+    fun getAllActividades(){
         viewModelScope.launch {
-            var categorias: List<Categoria> = fireStoreModel.getCategorias()
-            Log.i("tabs", "Estas son las categorias: $categorias")
-            _categorias.value = categorias
+            _actividadesTodas.value = fireStoreModel.getAllActividades()
         }
     }
-
 
 }
 

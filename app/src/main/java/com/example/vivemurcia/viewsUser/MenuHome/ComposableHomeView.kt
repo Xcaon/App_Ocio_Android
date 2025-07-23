@@ -1,203 +1,180 @@
 package com.example.vivemurcia.views.home
 
+import android.text.Layout
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.material3.Tab
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
+import com.example.vivemurcia.R
+import com.example.vivemurcia.model.clases.Actividad
 import com.example.vivemurcia.model.clases.Categoria
-import com.example.vivemurcia.model.dataClass.TabItem
-import com.example.vivemurcia.ui.theme.colorNegroProyecto
-import com.example.vivemurcia.ui.theme.grisTransparente
-import com.example.vivemurcia.viewsUser.MenuHome.listadoCategoriasHome
+import com.example.vivemurcia.viewsCompany.createActivity.Espaciado
+import com.example.vivemurcia.viewsUser.MenuHome.pantallaDetalle.ViewModelDetalle
 
 
 @Composable
 fun InicioHome(navController: NavController) {
-    var selectedTabIndex: Int by remember { mutableIntStateOf(0) }
-    val focusManager = LocalFocusManager.current
-    Column(
-        Modifier
-            .fillMaxSize().clickable {
-                focusManager.clearFocus()
-            }
-    ) {
-        // Barra de busqueda
-        Row() {
-            FiltroActividades()
-        }
-        // Barra de categorias
-        var categorias : List<Categoria> = emptyList()
+
+    val homeViewModel: HomeViewModel = hiltViewModel<HomeViewModel>()
+    val viewModelDetalle: ViewModelDetalle = hiltViewModel<ViewModelDetalle>()
+
+    var listadoHorizontal: State<List<Actividad>> =
+        homeViewModel.actividadesDestacadas.collectAsState()
+    var actividadesTodos: State<List<Actividad>> = homeViewModel.actividadesTodas.collectAsState()
+
+    LaunchedEffect(Unit) {
+        homeViewModel.getActividadesDestacadas()
+        homeViewModel.getAllActividades()
+    }
+
+    Column() {
+        // 1 APARTADO : Texto inicial con boton para filtrar categorias ///////////////////////////////////////
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(70.dp)
+                .height(50.dp)
+                .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
-            // Empieza en 0 porque es el primer tab
-            CategoriasTab(focusManager,selectedTabIndex) { updateSelectedTab ->
-                selectedTabIndex = updateSelectedTab
-
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                Text(
+                    fontFamily = FontFamily(Font(R.font.plusjakartasansbold)),
+                    fontSize = 18.sp,
+                    text = "Explora",
+                    textAlign = TextAlign.Center
+                )
             }
         }
-        // Listado de Actividades
-        Listado(selectedTabIndex, navController)
-    }
-}
 
-@Composable
-fun CategoriasTab(focusManager: FocusManager,selectedTabIndexActual: Int, selectedTabIndexUpdate: (Int) -> Unit) {
 
-    val viewModelHome : HomeViewModel = hiltViewModel<HomeViewModel>()
-    val isLoading by viewModelHome.isLoading.collectAsState()
-    LaunchedEffect(Unit) {
-        viewModelHome.getCategoriasTab()
-    }
+        // 2 APARTADO: Destacados ////////////////////////////////////////////
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
 
-    var categorias: State<List<Categoria>> = viewModelHome.categorias.collectAsState()
-    Log.i("fer", "Estas son las categorias del stateFlow $categorias")
+            Row() {
+                Text(
+                    fontFamily = FontFamily(Font(R.font.plusjakartasansbold)),
+                    fontSize = 18.sp,
+                    text = "Destacados",
+                    textAlign = TextAlign.Center
+                )
+            }
+            HorizontalDivider(thickness = 8.dp, color = Color.Transparent)
 
-    if (isLoading) {
-        CircularProgressIndicatorLoader()
-        return
-    }
+            Row(modifier = Modifier.height(200.dp)) {
+                if (listadoHorizontal.value.isNotEmpty()) {
+                    LazyRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentPadding = PaddingValues(horizontal = 4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(listadoHorizontal.value) { actividad ->
+                            ActividadCardCuadrada(actividad) {
+                                viewModelDetalle.inicialNavController(navController)
+                                viewModelDetalle.mostrarActividadDetalle(it)
+                            }
+                        }
+                    }
 
-    var tabs: List<TabItem> = categorias.value.map { categoria : Categoria ->
-        TabItem(categoria.nombre.toString(), categoria.iconoUri.toString())
-    }
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .background(shimmerBrush())
+                            .fillMaxWidth()
+                    ) { }
+                }
+            }
+        }
 
-        Column {
-        TabRow(modifier = Modifier.clickable{focusManager.clearFocus()},selectedTabIndex = selectedTabIndexActual) {
-            tabs.forEachIndexed { index, title ->
-                Tab(
-                    text = { Text(fontSize = 14.sp, text = tabs[index].title) },
-                    selected = selectedTabIndexActual == index, // Marcar como seleccionado
-                    onClick = { selectedTabIndexUpdate(index) },
-                    icon = {
-                        AsyncImage(
-                            model = title.icon, // aquí pones la URL o el recurso
-                            contentDescription = "Icono de ${title.title}",
-                            modifier = Modifier.size(28.dp)
-                        )
+
+        // 3 APARTADO: Actividades Novedades //////////////////////////////
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(
+                fontWeight = FontWeight.Normal,
+                fontFamily = FontFamily(Font(R.font.plusjakartasansbold)),
+                fontSize = 18.sp,
+                text = "Novedades",
+                textAlign = TextAlign.Center
+            )
+            if (actividadesTodos.value.isNotEmpty()) {
+                LazyHorizontalGrid(
+                    rows = GridCells.Fixed(2), // 2 filas
+                    modifier = Modifier
+                        .height(400.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    items(actividadesTodos.value) { actividad ->
+                        ActividadCard(actividad) {
+                            viewModelDetalle.inicialNavController(navController)
+                            viewModelDetalle.mostrarActividadDetalle(it)
+                        }
+                    }
+                }
+            } else if (actividadesTodos.value.isEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .background(shimmerBrush())
+                        .fillMaxWidth()
+                        .height(400.dp),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.Top,
+                    content = {
+
                     }
                 )
             }
+
         }
-            HorizontalDivider( thickness = 1.dp, color = grisTransparente)
+
+
     }
 
 }
 
-@Composable
-fun Listado(selectedTabIndex: Int, navController: NavController) {
-
-    val homeViewModel : HomeViewModel = hiltViewModel<HomeViewModel>()
-    var categorias: State<List<Categoria>> = homeViewModel.categorias.collectAsState()
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-    ) {
-        if (!categorias.value.isEmpty()) {
-            var categoria = categorias.value[selectedTabIndex]
-            listadoCategoriasHome(navController, categoria.nombre.toString())
-        }
-
-    }
-}
 
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun FiltroActividades() {
 
-    val homeViewModel: HomeViewModel = hiltViewModel<HomeViewModel>()
-    var searchText by remember { mutableStateOf("") }
-
-    val interactionSource = remember { MutableInteractionSource() }
-    val isFocused by interactionSource.collectIsFocusedAsState()
-
-    TextField(
-        value = searchText,
-        onValueChange = { searchText = it },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 16.dp)
-            .shadow(
-                elevation = 2.dp,
-                shape = RoundedCornerShape(12.dp),
-                clip = false,
-                ambientColor = colorNegroProyecto
-            ),
-        placeholder = {
-            if (!isFocused && searchText.isEmpty()) {
-                Text(fontSize = 16.sp ,text = "¿Qué plan te llama hoy?",overflow = TextOverflow.Ellipsis)
-            }
-        },
-        singleLine = true,
-        shape = RoundedCornerShape(12.dp),
-        trailingIcon = {
-            IconButton(onClick = { homeViewModel.filterActividades(searchText) }) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Buscar"
-                )
-            }
-        },
-        colors = TextFieldDefaults.textFieldColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
-        ),
-        keyboardActions = KeyboardActions(
-            onDone = {
-                homeViewModel.filterActividades(searchText)
-            }
-        ),
-        interactionSource =  interactionSource
-    )
-}
 

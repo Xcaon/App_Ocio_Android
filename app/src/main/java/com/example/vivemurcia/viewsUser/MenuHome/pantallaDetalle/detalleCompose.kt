@@ -140,7 +140,7 @@ fun MostrarActividadDetalle(idActividad: String?, categoriaActividad: String?)  
             Button(
                 modifier = Modifier.weight(1f),
                 onClick = {
-                    viewModelDetalle.addActividadListaFavoritos(idActividad)
+                    viewModelDetalle.addActividadListaFavoritos(idActividad, categoriaActividad)
                 }
             ) {
                 Text(text = "Guardar")

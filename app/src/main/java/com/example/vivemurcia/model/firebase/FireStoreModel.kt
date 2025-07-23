@@ -1,17 +1,22 @@
 package com.example.vivemurcia.model.firebase
 
+import android.net.Uri
 import android.util.Log
 import com.example.vivemurcia.data.response.ActividadResponse
 import com.example.vivemurcia.model.clases.Actividad
 import com.example.vivemurcia.model.clases.Categoria
 import com.example.vivemurcia.model.enums.EnumCategories
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.Source
+import com.google.firebase.firestore.model.FieldPath
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -23,7 +28,7 @@ class FireStoreModel @Inject constructor(
         const val COLLECTION_ACTIVIDADES = "actividades"
     }
 
-    suspend fun getSingleActivity(idActividad: String, categoriaActividad: String) : Actividad? {
+    suspend fun getSingleActivity(idActividad: String, categoriaActividad: String): Actividad? {
         return try {
             firestore.collection(COLLECTION_ACTIVIDADES + categoriaActividad)
                 .document(idActividad)
@@ -35,13 +40,45 @@ class FireStoreModel @Inject constructor(
         }
     }
 
-    // Nos devuelve una lista de actividades
-    suspend fun getActividades(categoria : EnumCategories): List<Actividad> {
+    // Nos devuelve una lista de actividades destacadas que le definimos
+    suspend fun getDestacadas(listaDestacadas: List<String>): List<Actividad> {
+
+        val documentos = mutableListOf<Actividad>()
+
+        for (idActividad in listaDestacadas) {
+
+            val document = firestore.collection(COLLECTION_ACTIVIDADES)
+                .document(idActividad)
+                .get(Source.DEFAULT)
+                .await()
+
+            val response = document.toObject(ActividadResponse::class.java) ?: continue
+            var actividad = response.toDomain()
+            actividad.idActividad = document.id
+
+            // Recuperar imagen en segundo plano
+            val uri = withContext(Dispatchers.IO) {
+                storage.getImagen(actividad.tituloActividad, actividad.idEmpresa)
+            }
+            actividad.uriImagen = uri
+
+            documentos.add(actividad)
+        }
+
+        return documentos
+
+    }
+
+
+    // Nos devuelve todas las actividades
+    suspend fun getAllActividades(): List<Actividad> {
         return try {
-            firestore.collection(COLLECTION_ACTIVIDADES + categoria.nombre)
+            firestore.collection(COLLECTION_ACTIVIDADES)
+                .orderBy("fechaHoraActividad", Query.Direction.DESCENDING)
+                .limit(15)
                 .get(Source.DEFAULT) /* Lee los datos de la caché local si están disponibles y no han expirado. Si los datos no están en la caché o han expirado, se leerán del servidor. */
                 .await()
-                .map{ document ->
+                .map { document ->
                     val response = document.toObject(ActividadResponse::class.java)
                     var actividad = response.toDomain()
                     actividad.idActividad = document.id
@@ -62,7 +99,8 @@ class FireStoreModel @Inject constructor(
     // Subir actividad
     suspend fun subirActividad(actividad: Actividad): Boolean {
         return try {
-            firestore.collection(COLLECTION_ACTIVIDADES + actividad.categoriaActividad).add(actividad).await()
+            firestore.collection(COLLECTION_ACTIVIDADES + actividad.categoriaActividad)
+                .add(actividad).await()
             true
         } catch (e: Exception) {
             Log.e("fernando", "Error al subir la actividad a Firestore: ${e.message}")
@@ -70,55 +108,62 @@ class FireStoreModel @Inject constructor(
         }
     }
 
-    suspend fun getCategorias() : List<Categoria> {
+    suspend fun getCategorias(): List<Categoria> {
 
         return try {
-            firestore.collection("/categorias").get(Source.DEFAULT).await().map { document ->
-                var response: Categoria = document.toObject(Categoria::class.java)
-                var categoria: Categoria = response.toDomain()
-                categoria.iconoUri = storage.getUriIcono(categoria.nombre).toString()
-                categoria
-            }
+            firestore.collection("/categorias").get(Source.DEFAULT).await()
+                .map { document: QueryDocumentSnapshot ->
+                    var response: Categoria = document.toObject(Categoria::class.java)
+                    var categoria: Categoria = response.toDomain()
+                    categoria.iconoUri = storage.getUriIcono(categoria.nombre).toString()
+                    categoria
+                }
         } catch (e: Exception) {
-            Log.e("firestore","No se pueden recoger las categorias + $e")
+            Log.e("firestore", "No se pueden recoger las categorias + $e")
             emptyList()
         }
     }
 
-    fun subirActividadListaFavoritos(idActividad: String?, userId: String?)  {
-        val firestore = FirebaseFirestore.getInstance()
-        val ref = firestore.collection("usuarios").document(userId.toString())
+    // Subimos la actividad a la subcoleccion de actividades favoritas del usuario
+    suspend fun subirActividadListaFavoritos(
+        idActividad: String?,
+        userId: String?,
+        categoriaActividad: String?
+    ) {
+        // Documento del usuario en concreto
+        var actividad: Actividad? =
+            getSingleActivity(idActividad.toString(), categoriaActividad.toString())
 
-        ref.get()
-            .addOnSuccessListener { document ->
-                if (!document.exists()) {
-                    // Documento no existe, lo creamos con el array
-                    val datosIniciales = mapOf(
-                        "actividadesFavoritasIds" to listOf(idActividad)
-                    )
-
-                    ref.set(datosIniciales)
-                        .addOnSuccessListener {
-                            Log.d("fernando", "Documento creado y favorito añadido")
-                        }
-                        .addOnFailureListener { e ->
-                            Log.e("fernando", "Error al crear documento: ${e.message}")
-                        }
-                } else {
-                    // Documento ya existe, solo hacemos update
-                    ref.update("actividadesFavoritasIds", FieldValue.arrayUnion(idActividad))
-                        .addOnSuccessListener {
-                            Log.d("fernando", "Favorito añadido al documento existente")
-                        }
-                        .addOnFailureListener { e ->
-                            Log.e("fernando", "Error al añadir favorito: ${e.message}")
-                        }
+        try {
+            firestore.collection("usuarios")
+                .document(userId.toString())
+                .collection("favoritos")
+                .document(idActividad.toString())
+                .set(actividad!!)
+                .addOnSuccessListener {
+                    Log.d("Firestore", "Favorito guardado correctamente")
                 }
-            }
-            .addOnFailureListener { e ->
-                Log.e("fernando", "Error al comprobar existencia del documento: ${e.message}")
-            }
+                .addOnFailureListener { e ->
+                    Log.e("Firestore", "Error al guardar el favorito", e)
+                }
+        } catch (e: Exception) {
+            Log.e("Firestore", "Error al guardar el favorito", e)
+        }
+    }
 
+    // Recuperar lista de favoritas de un usuario
+    suspend fun conseguirFavoritosDelUsuario(userId: String?): List<Actividad> {
+        return try {
+            firestore.collection("usuarios").document(userId.toString()).collection("favoritos")
+                .get().await().map { document ->
+                    val response = document.toObject(ActividadResponse::class.java)
+                    var actividad = response.toDomain()
+                    actividad.apply { actividad.idActividad = document.id }
+                }
+        } catch (e: Exception) {
+            Log.e("fernando", "Error al obtener las actividades de Firestore: ${e.message}")
+            emptyList() // Return an empty list if cache is empty
+        }
     }
 
 
