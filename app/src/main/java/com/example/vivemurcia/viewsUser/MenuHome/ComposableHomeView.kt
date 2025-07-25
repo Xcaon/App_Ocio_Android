@@ -125,7 +125,6 @@ fun InicioHome(navController: NavController) {
             }
         }
 
-
         // 3 APARTADO: Actividades Novedades //////////////////////////////
         Column(
             modifier = Modifier

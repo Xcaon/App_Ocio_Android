@@ -19,11 +19,17 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.vivemurcia.R
 import com.example.vivemurcia.model.clases.Actividad
 import com.example.vivemurcia.views.home.ActividadCard
+import com.example.vivemurcia.viewsCompany.createActivity.Espaciado
 import com.example.vivemurcia.viewsUser.MenuHome.pantallaDetalle.ViewModelDetalle
 
 
@@ -44,8 +50,13 @@ fun InicioComposableFavoritos(navController: NavController) {
             .background(Color.White)
             .padding(16.dp)
     ) {
-        Text(text = "Favoritos", style = MaterialTheme.typography.titleLarge)
-        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            fontFamily = FontFamily(Font(R.font.plusjakartasansbold)),
+            fontSize = 18.sp,
+            text = "Favoritos",
+            textAlign = TextAlign.Center
+        )
+        Espaciado(16)
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             verticalArrangement = Arrangement.spacedBy(16.dp),

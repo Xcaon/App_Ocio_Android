@@ -17,6 +17,9 @@ val textoNaranja = Color(0xFFE5611B)
 
 val colorCategoria = Color(0xFF4A739C)
 
+// Color negro iconos
+val negroIconos = Color(0xFF0F1417)
+
 
 
 

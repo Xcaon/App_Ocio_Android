@@ -36,7 +36,7 @@ class HomeViewModel @Inject constructor(
 
     fun getAllActividades(){
         viewModelScope.launch {
-            _actividadesTodas.value = fireStoreModel.getAllActividades()
+            _actividadesTodas.value = fireStoreModel.getAllActividades(15)
         }
     }
 
