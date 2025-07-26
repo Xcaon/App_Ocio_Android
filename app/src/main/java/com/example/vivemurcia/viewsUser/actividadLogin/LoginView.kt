@@ -15,6 +15,7 @@ import com.example.vivemurcia.model.sharedPreferences.PreferencesConfig
 import com.example.vivemurcia.model.sharedPreferences.PreferencesConfig.savePreferences
 import com.example.vivemurcia.ui.theme.VivemurciaTheme
 import com.example.vivemurcia.views.home.HomeView
+import com.example.vivemurcia.viewsCompany.ui.theme.VivemurciaTheme
 import com.example.vivemurcia.viewsUser.actividadInfo.InfoView
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -65,7 +66,7 @@ class LoginView : ComponentActivity() {
             overridePendingTransition(android.R.anim.fade_out, android.R.anim.fade_in)
         } else {
             setContent {
-                VivemurciaTheme(darkTheme = false) {
+                VivemurciaTheme {
                     InitLogin {
                         signIn()
                     }

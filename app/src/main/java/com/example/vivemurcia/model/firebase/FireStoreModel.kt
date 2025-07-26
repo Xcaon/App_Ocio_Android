@@ -45,7 +45,10 @@ class FireStoreModel @Inject constructor(
 
             val document = firestore.collection(COLLECTION_ACTIVIDADES)
                 .document(idActividad)
-                .get(Source.DEFAULT)
+                .get(Source.CACHE).addOnFailureListener {
+                    firestore.collection(COLLECTION_ACTIVIDADES)
+                        .document(idActividad).get(Source.SERVER)
+                }
                 .await()
 
             val response = document.toObject(ActividadResponse::class.java) ?: continue
@@ -72,7 +75,11 @@ class FireStoreModel @Inject constructor(
             firestore.collection(COLLECTION_ACTIVIDADES)
                 .orderBy("fechaHoraActividad", Query.Direction.DESCENDING)
                 .limit(15)
-                .get(Source.DEFAULT) /* Lee los datos de la caché local si están disponibles y no han expirado. Si los datos no están en la caché o han expirado, se leerán del servidor. */
+                .get(Source.CACHE).addOnFailureListener {
+                    firestore.collection(COLLECTION_ACTIVIDADES)
+                        .orderBy("fechaHoraActividad", Query.Direction.DESCENDING)
+                        .limit(15).get(Source.SERVER)
+                }
                 .await()
                 .map { document ->
                     val response = document.toObject(ActividadResponse::class.java)

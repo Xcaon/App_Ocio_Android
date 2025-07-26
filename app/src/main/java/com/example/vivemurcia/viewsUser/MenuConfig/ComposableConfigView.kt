@@ -5,6 +5,7 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -20,11 +21,14 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,8 +45,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivity
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.vivemurcia.R
 import com.example.vivemurcia.model.clases.Actividad
+import com.example.vivemurcia.model.sharedPreferences.PreferencesConfig.saveThemeColor
+import com.example.vivemurcia.ui.theme.ThemeViewModel
+import com.example.vivemurcia.ui.theme.colorPrimario
 import com.example.vivemurcia.ui.theme.negroIconos
 import com.example.vivemurcia.views.login.LoginView
 import com.example.vivemurcia.viewsCompany.createActivity.Espaciado
@@ -54,7 +62,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 fun Inicio() {
     val context = LocalContext.current
 
-    var valorTemaOscuro by remember { mutableStateOf(false) }
+    val themeViewModel : ThemeViewModel = hiltViewModel<ThemeViewModel>()
+    val isDark by themeViewModel.isDarkTheme.collectAsState()
+
+    LaunchedEffect(Unit) {
+        themeViewModel.getTheme()
+    }
 
     Column(
         modifier = Modifier
@@ -174,10 +187,18 @@ Un saludo.
                     text = "Claro/Oscuro"
                 )
                 Checkbox(
-                    checked = valorTemaOscuro,
-                    onCheckedChange = { it ->
-                        valorTemaOscuro = it
-                    }
+                    modifier = Modifier.weight(1f),
+                    checked = isDark,
+                    onCheckedChange = { it: Boolean ->
+                        saveThemeColor(context, it)
+                        themeViewModel.setTheme(it)
+                        Toast.makeText(context, "Reiniciar App para aplicar cambios", Toast.LENGTH_LONG).show()
+                    },
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = colorPrimario,      // Color del borde y fondo al marcar
+                        uncheckedColor = Color.Gray,     // Color del borde al desmarcar
+                        checkmarkColor = Color.White     // Color del tick ✓
+                    )
                 )
             }
         }

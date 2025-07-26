@@ -2,18 +2,21 @@ package com.example.vivemurcia.viewsUser.MenuHome.pantallaDetalle
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.vivemurcia.model.clases.Actividad
 import com.example.vivemurcia.model.firebase.FireStorageModel
 import com.example.vivemurcia.model.firebase.FireStoreModel
+import com.example.vivemurcia.model.sharedPreferences.PreferencesConfig
 import com.example.vivemurcia.model.sharedPreferences.PreferencesConfig.getUserId
 import com.example.vivemurcia.views.bottomBar.Rutas
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,6 +37,9 @@ class ViewModelDetalle @Inject constructor(
 
     // Definimos el navController para coger el control de las pantallas
     var navController: NavController? = null
+
+    var _isFav = MutableStateFlow<Boolean>(false)
+    var isFav: StateFlow<Boolean> = _isFav.asStateFlow()
 
 
     // Hay que llamar siempre antes a esta funcion
@@ -57,10 +63,10 @@ class ViewModelDetalle @Inject constructor(
     fun PintarActividadDetalle(idActividad: String, categoriaActividad: String?) {
 
         viewModelScope.launch {
-            var actividad =
-                fireStoreModel.getSingleActivity(idActividad, categoriaActividad.toString())
+            var actividad = fireStoreModel.getSingleActivity(idActividad, categoriaActividad.toString())
             _actividad.value = actividad
-            _actividad.value?.idActividad = idActividad
+            Log.d("fernando", "PintarActividadDetalle: ${actividad?.idActividad}")
+            _actividad.value!!.idActividad = idActividad
 
             actividad?.let {
                 _actividad.value?.uriImagen = getUriImagen(
@@ -76,15 +82,35 @@ class ViewModelDetalle @Inject constructor(
     }
 
     fun addActividadListaFavoritos(idActividad: String?, categoriaActividad: String?) {
-
+        Log.d("fernando", "addActividadListaFavoritos: $idActividad")
         viewModelScope.launch {
             fireStoreModel.subirActividadListaFavoritos(
                 idActividad,
                 getUserId(context),
                 categoriaActividad
             )
+            _isFav.value = !_isFav.value
         }
 
+    }
+
+
+
+    fun borrarDeFavoritos(actividadValue: Actividad?) {
+        viewModelScope.launch {
+            val uidUsuario: String? = getUserId(context)
+            fireStoreModel.borrarDeFavoritos(actividadValue, uidUsuario)
+            _isFav.value = !_isFav.value
+        }
+    }
+
+    fun isFavorito(actividad: String) {
+        viewModelScope.launch {
+            val uidUsuario: String? = getUserId(context)
+            val isFav = fireStoreModel.isFavorito(actividad, uidUsuario)
+            Log.d("fernando", "isFavorito: $isFav")
+            _isFav.value = isFav
+        }
     }
 
 

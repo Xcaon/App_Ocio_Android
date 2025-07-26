@@ -33,6 +33,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -65,10 +68,15 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.example.vivemurcia.R
+import com.example.vivemurcia.ui.theme.ThemeViewModel
 import com.example.vivemurcia.ui.theme.colorCategoria
+import com.example.vivemurcia.viewsCompany.ui.theme.VivemurciaTheme
+import com.example.vivemurcia.viewsUser.MenuHome.pantallaDetalle.ViewModelDetalle
+
 
 
 @AndroidEntryPoint
@@ -77,10 +85,25 @@ class HomeView : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            VivemurciaTheme {
-                MyApp()
-            }
+            ViveMurciaApp()
         }
+    }
+}
+
+
+@Composable
+fun ViveMurciaApp() {
+    val themeViewModel : ThemeViewModel = hiltViewModel<ThemeViewModel>()
+
+    LaunchedEffect(Unit) {
+        themeViewModel.getTheme()
+    }
+
+    val isDark = themeViewModel.isDarkTheme.collectAsState()
+
+    Log.d("darkTheme", "ViveMurciaApp: ${isDark.value}")
+    VivemurciaTheme(isDarkTheme = isDark.value) {
+        MyApp()
     }
 }
 
@@ -144,7 +167,12 @@ fun ActividadCardCuadrada(actividad: Actividad, onClickActividad: (Actividad) ->
                 overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.height(2.dp))
-            Text(color = colorCategoria, fontFamily = FontFamily(Font(R.font.plusjakartasansregular)), fontSize = 10.sp, text = actividad.categoriaActividad.toString())
+            Text(
+                color = colorCategoria,
+                fontFamily = FontFamily(Font(R.font.plusjakartasansregular)),
+                fontSize = 10.sp,
+                text = actividad.categoriaActividad.toString()
+            )
             Spacer(modifier = Modifier.height(4.dp))
 
         }
@@ -174,17 +202,18 @@ fun ActividadCard(actividad: Actividad, onClickActividad: (Actividad) -> Unit) {
                 onClickActividad(actividad)
             }
     ) {
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(125.dp)
-                .background(if (cargando.value) shimmerBrush() else SolidColor(Color.Transparent))
-                .border(4.dp, Color.Transparent, RoundedCornerShape(12.dp)).clip(RoundedCornerShape(12.dp))
+//                .background(if (cargando.value) shimmerBrush() else SolidColor(Color.White))
+
         ) {
             AsyncImage(
                 model = actividad.uriImagen,
                 contentDescription = "Imagen actividad",
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxSize().height(125.dp),
                 contentScale = ContentScale.Crop,
                 onState = { it: AsyncImagePainter.State ->
                     if (it is AsyncImagePainter.State.Success) {
@@ -210,7 +239,12 @@ fun ActividadCard(actividad: Actividad, onClickActividad: (Actividad) -> Unit) {
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
-            Text(color = colorCategoria, fontFamily = FontFamily(Font(R.font.plusjakartasansregular)), fontSize = 10.sp, text = actividad.categoriaActividad.toString())
+            Text(
+                color = colorCategoria,
+                fontFamily = FontFamily(Font(R.font.plusjakartasansregular)),
+                fontSize = 10.sp,
+                text = actividad.categoriaActividad.toString()
+            )
             Spacer(modifier = Modifier.height(4.dp))
         }
     }

@@ -16,19 +16,24 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ViewModelFavoritos @Inject constructor(val firestore: FireStoreModel, @ApplicationContext val context: Context) : ViewModel()
-{
+class ViewModelFavoritos @Inject constructor(
+    val firestore: FireStoreModel,
+    @ApplicationContext val context: Context
+) : ViewModel() {
 
     var _favoritoUsuario = MutableStateFlow<List<Actividad>>(emptyList())
-    var favorito : StateFlow<List<Actividad>> = _favoritoUsuario.asStateFlow()
+    var favorito: StateFlow<List<Actividad>> = _favoritoUsuario.asStateFlow()
 
-     fun conseguirFavoritosDelUsuario(){
-         viewModelScope.launch {
-             val uidUsuario: String? = PreferencesConfig.getUserId(context)
-             val favoritos: List<Actividad> = firestore.conseguirFavoritosDelUsuario(uidUsuario)
 
-             _favoritoUsuario.value = favoritos
-         }
+
+    fun conseguirFavoritosDelUsuario() {
+        viewModelScope.launch {
+            val uidUsuario: String? = PreferencesConfig.getUserId(context)
+            val favoritos: List<Actividad> = firestore.conseguirFavoritosDelUsuario(uidUsuario)
+
+            _favoritoUsuario.value = favoritos
+        }
     }
+
 
 }

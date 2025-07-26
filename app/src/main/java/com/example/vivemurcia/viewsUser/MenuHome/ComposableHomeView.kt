@@ -22,6 +22,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -62,7 +64,7 @@ fun InicioHome(navController: NavController) {
         homeViewModel.getAllActividades()
     }
 
-    Column() {
+    Column(modifier = Modifier.fillMaxSize().verticalScroll(enabled = true,state =rememberScrollState())) {
         // 1 APARTADO : Texto inicial con boton para filtrar categorias ///////////////////////////////////////
         Row(
             modifier = Modifier
@@ -81,7 +83,6 @@ fun InicioHome(navController: NavController) {
                 )
             }
         }
-
 
         // 2 APARTADO: Destacados ////////////////////////////////////////////
         Column(
@@ -119,7 +120,7 @@ fun InicioHome(navController: NavController) {
                     Box(
                         modifier = Modifier
                             .background(shimmerBrush())
-                            .fillMaxWidth()
+                            .fillMaxWidth().height(200.dp)
                     ) { }
                 }
             }
@@ -138,6 +139,7 @@ fun InicioHome(navController: NavController) {
                 text = "Novedades",
                 textAlign = TextAlign.Center
             )
+            HorizontalDivider(thickness = 8.dp, color = Color.Transparent)
             if (actividadesTodos.value.isNotEmpty()) {
                 LazyHorizontalGrid(
                     rows = GridCells.Fixed(2), // 2 filas

@@ -23,6 +23,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -113,7 +114,7 @@ fun InicioBuscador(navController: NavHostController) {
                 text = {
                     Text(
                         fontFamily = FontFamily(Font(R.font.plusjakartasansmedium)),
-                        text = "Filtrar"
+                        text = "Filtrar actividades"
                     )
                 },
                 icon = { Icon(Icons.Filled.Tune, contentDescription = "") },
@@ -187,19 +188,21 @@ fun InicioBuscador(navController: NavHostController) {
                 }
             }
         } else {
-            Box(
+            Column (
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
-                contentAlignment = Alignment.TopCenter
+                verticalArrangement = Arrangement.Center
             ) {
-                Row(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(shimmerBrush())
-                        .padding(16.dp)
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("Cargando actividades")
+                    Text(fontFamily = FontFamily(Font(R.font.plusjakartasansmedium)), text = "Cargando Actividades...")
+                    Espaciado(8)
+                    CircularProgressIndicator(color = colorNegroProyecto)
                 }
             }
         }

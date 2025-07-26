@@ -5,8 +5,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.vivemurcia.model.sharedPreferences.PreferencesConfig.savePreferences
+import com.example.vivemurcia.ui.theme.ThemeViewModel
 import com.example.vivemurcia.ui.theme.VivemurciaTheme
+import com.example.vivemurcia.views.bottomBar.MyApp
 import com.example.vivemurcia.views.home.HomeView
 import com.example.vivemurcia.views.info.InicioComposableInfoView
 
@@ -15,15 +20,23 @@ class InfoView : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            VivemurciaTheme {
-                // Pendiente de arreglar que se le da click al card y no al boton para ir al
-                // HomeView
-                InicioComposableInfoView {
-                    var intent = Intent(this, HomeView::class.java)
-                    startActivity(intent)
-                }
+            ViveMurciaAppInfo()
+        }
+    }
+
+    @Composable
+    fun ViveMurciaAppInfo() {
+
+        val themeViewModel : ThemeViewModel = hiltViewModel<ThemeViewModel>()
+        val isDark = themeViewModel.isDarkTheme.collectAsState()
+
+        VivemurciaTheme(isDarkTheme = isDark.value) {
+            InicioComposableInfoView {
+                var intent = Intent(this, HomeView::class.java)
+                startActivity(intent)
             }
         }
     }
+
 }
 
