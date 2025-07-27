@@ -62,7 +62,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 fun Inicio() {
     val context = LocalContext.current
 
-    val themeViewModel : ThemeViewModel = hiltViewModel<ThemeViewModel>()
+    val themeViewModel: ThemeViewModel = hiltViewModel<ThemeViewModel>()
     val isDark by themeViewModel.isDarkTheme.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -124,7 +124,11 @@ Un saludo.
             try {
                 context.startActivity(intent)
             } catch (e: ActivityNotFoundException) {
-                Toast.makeText(context, "No hay app de correo instalada, error: $e", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    "No hay app de correo instalada, error: $e",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
         }) {
@@ -134,16 +138,16 @@ Un saludo.
             ) {
                 Text(
                     modifier = Modifier.weight(1.5f),
-                    color = Color.Black,
                     fontFamily = FontFamily(Font(R.font.plusjakartasansregular)),
                     fontSize = 18.sp,
-                    text = "Sugerencias"
+                    text = "Sugerencias",
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 Icon(
                     modifier = Modifier.weight(1f),
                     imageVector = Icons.Default.ArrowForward,
                     contentDescription = "Ir",
-                    tint = negroIconos
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
             }
         }
@@ -158,16 +162,16 @@ Un saludo.
             ) {
                 Text(
                     modifier = Modifier.weight(1.5f),
-                    color = Color.Black,
                     fontFamily = FontFamily(Font(R.font.plusjakartasansregular)),
                     fontSize = 18.sp,
-                    text = "Promociona tu negocio"
+                    text = "Promociona tu negocio",
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 Icon(
                     modifier = Modifier.weight(1f),
                     imageVector = Icons.Default.ArrowForward,
                     contentDescription = "Ir",
-                    tint = negroIconos
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
             }
         }
@@ -181,10 +185,10 @@ Un saludo.
             ) {
                 Text(
                     modifier = Modifier.weight(1.5f),
-                    color = Color.Black,
                     fontFamily = FontFamily(Font(R.font.plusjakartasansregular)),
                     fontSize = 18.sp,
-                    text = "Claro/Oscuro"
+                    text = "Claro/Oscuro",
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 Checkbox(
                     modifier = Modifier.weight(1f),
@@ -192,7 +196,11 @@ Un saludo.
                     onCheckedChange = { it: Boolean ->
                         saveThemeColor(context, it)
                         themeViewModel.setTheme(it)
-                        Toast.makeText(context, "Reiniciar App para aplicar cambios", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            context,
+                            "Reiniciar App para aplicar cambios",
+                            Toast.LENGTH_LONG
+                        ).show()
                     },
                     colors = CheckboxDefaults.colors(
                         checkedColor = colorPrimario,      // Color del borde y fondo al marcar
@@ -212,16 +220,16 @@ Un saludo.
             ) {
                 Text(
                     modifier = Modifier.weight(1.5f),
-                    color = Color.Black,
                     fontFamily = FontFamily(Font(R.font.plusjakartasansregular)),
                     fontSize = 18.sp,
-                    text = "Cerrar Sesión"
+                    text = "Cerrar Sesión",
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 Icon(
                     modifier = Modifier.weight(1f),
                     imageVector = Icons.Default.ArrowForward,
                     contentDescription = "Ir",
-                    tint = negroIconos
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
             }
         }

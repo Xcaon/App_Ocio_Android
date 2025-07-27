@@ -114,7 +114,7 @@ fun InicioBuscador(navController: NavHostController) {
                 text = {
                     Text(
                         fontFamily = FontFamily(Font(R.font.plusjakartasansmedium)),
-                        text = "Filtrar actividades"
+                        text = "Filtrar"
                     )
                 },
                 icon = { Icon(Icons.Filled.Tune, contentDescription = "") },

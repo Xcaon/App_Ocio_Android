@@ -77,7 +77,7 @@ fun InicioHome(navController: NavController) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                 Text(
                     fontFamily = FontFamily(Font(R.font.plusjakartasansbold)),
-                    fontSize = 18.sp,
+                    fontSize = 24.sp,
                     text = "Explora",
                     textAlign = TextAlign.Center
                 )

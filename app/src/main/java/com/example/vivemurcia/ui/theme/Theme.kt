@@ -16,7 +16,7 @@ import com.example.vivemurcia.model.sharedPreferences.PreferencesConfig.getTheme
 private val DarkColorScheme = darkColorScheme(
     primary = colorPrimario,
     secondary = SoftPink,
-    background = colorNegroProyecto,
+    background = fondoNegro,
     onBackground = Color.White,
     surface = colorNegroProyecto,
     primaryContainer = Color(0xFFB388FF), // color del fondo del icono activo

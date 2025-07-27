@@ -52,7 +52,7 @@ fun MyBottomNavigation(navController: NavHostController) {
                 end = Offset(size.width, 0f), // derecha arriba
                 strokeWidth = 2f // grosor de la línea
             )
-        }, contentColor = MaterialTheme.colorScheme.onSurface, containerColor = MaterialTheme.colorScheme.surface ) {
+        }, contentColor = MaterialTheme.colorScheme.onSurface, containerColor = MaterialTheme.colorScheme.surface , tonalElevation = 0.dp) {
         var index by remember { mutableIntStateOf(0) }
         NavigationBarItem(
             selected = index == 0,

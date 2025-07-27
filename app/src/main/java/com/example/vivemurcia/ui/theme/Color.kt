@@ -4,10 +4,15 @@ import androidx.compose.ui.graphics.Color
 
 
 
-val colorPrimario = Color(0xFFFF7F50)
+// Gris neutro, color secundario
+val colorSecundario = Color(0xFFB0AFAF)
+
+val colorPrimario = Color(0xFFFF7F50) // #2e3036
+
+
 val SoftPink = Color(0xFFFFB6B9)
 
-
+val fondoNegro = Color(0xFF2E3036)
 val colorNegroProyecto = Color(0xFF49454F)
 val grisTransparente = Color(0xFFE9E9E9)
 
