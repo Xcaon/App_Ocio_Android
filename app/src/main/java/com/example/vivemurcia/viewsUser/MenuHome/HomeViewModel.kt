@@ -22,6 +22,9 @@ class HomeViewModel @Inject constructor(
     val actividadesTodas = _actividadesTodas.asStateFlow()
 
     fun getActividadesDestacadas() {
+
+        if ( _actividadesDestacadas.value.isNotEmpty()) return
+
         viewModelScope.launch {
 
             // Le decimos que destacadas queremos
@@ -35,8 +38,11 @@ class HomeViewModel @Inject constructor(
 
 
     fun getAllActividades(){
+
+        if ( _actividadesTodas.value.isNotEmpty() ) return
+
         viewModelScope.launch {
-            _actividadesTodas.value = fireStoreModel.getAllActividades(15)
+            _actividadesTodas.value = fireStoreModel.getAllActividades(12)
         }
     }
 

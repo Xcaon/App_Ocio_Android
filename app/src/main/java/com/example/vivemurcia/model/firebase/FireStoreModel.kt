@@ -1,5 +1,6 @@
 package com.example.vivemurcia.model.firebase
 
+import android.net.Uri
 import android.util.Log
 import com.example.vivemurcia.data.response.ActividadResponse
 import com.example.vivemurcia.model.clases.Actividad
@@ -11,6 +12,8 @@ import com.google.firebase.firestore.Source
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -70,33 +73,34 @@ class FireStoreModel @Inject constructor(
 
 
     // Nos devuelve todas las actividades
-    suspend fun getAllActividades(limit: Int): List<Actividad> {
-        return try {
-            firestore.collection(COLLECTION_ACTIVIDADES)
-                .orderBy("fechaHoraActividad", Query.Direction.DESCENDING)
-                .limit(15)
-                .get(Source.CACHE).addOnFailureListener {
-                    firestore.collection(COLLECTION_ACTIVIDADES)
-                        .orderBy("fechaHoraActividad", Query.Direction.DESCENDING)
-                        .limit(15).get(Source.SERVER)
-                }
-                .await()
-                .map { document ->
-                    val response = document.toObject(ActividadResponse::class.java)
-                    var actividad = response.toDomain()
-                    actividad.idActividad = document.id
+    suspend fun getAllActividades(limit: Long): List<Actividad> {
 
-                    // Con async ponemos en segundo plano a recuperar la imagen
-                    val imageUrlDeferred = CoroutineScope(Dispatchers.IO).async {
-                        storage.getImagen(actividad.tituloActividad, actividad.idEmpresa)
-                    }
-                    // Aqui usamos await para decir oye cuando acabes de obtener en segundo plano la imagen me la asignas
-                    actividad.apply { uriImagen = imageUrlDeferred.await() }
-                }
+        val query = firestore.collection(COLLECTION_ACTIVIDADES)
+            .orderBy("fechaHoraActividad", Query.Direction.DESCENDING)
+            .limit(limit)
+
+        val snapshot = try {
+            query.get(Source.CACHE).await()
         } catch (e: Exception) {
-            Log.e("fernando", "Error al obtener las actividades de Firestore: ${e.message}")
-            emptyList() // Return an empty list if cache is empty
+            query.get(Source.SERVER).await()
         }
+
+        val actividades = snapshot.documents.map { doc ->
+            val response = doc.toObject(ActividadResponse::class.java)!!
+            response.toDomain().apply { idActividad = doc.id }
+        }
+
+        // Lanzamos la descarga de imágenes en paralelo
+        val actividadesConImagenes = coroutineScope {
+            actividades.map { actividad ->
+                async {
+                    val imagenUri = storage.getImagen(actividad.tituloActividad, actividad.idEmpresa)
+                    actividad.apply { uriImagen = imagenUri }
+                }
+            }.awaitAll() // Aquí esperamos todas y devolvemos la lista ya modificada
+        }
+
+        return actividadesConImagenes
     }
 
     // Subir actividad
@@ -186,22 +190,22 @@ class FireStoreModel @Inject constructor(
         }
     }
 
-     suspend fun isFavorito(actividadId: String, uidUsuario: String?) : Boolean {
-         Log.d("fernando", "isFavoritoIDACtividad: $actividadId")
-         Log.d("fernando", "isFavoritoUID: $uidUsuario")
-         return try {
-             val document = firestore.collection("usuarios")
-                 .document(uidUsuario.toString())
-                 .collection("favoritos")
-                 .document(actividadId)
-                 .get()
-                 .await() // Espera real
-             Log.d("fernando", "isFavorito: ${document.exists()}")
-             document.exists()
-         } catch (e: Exception) {
-             Log.e("Firestore", "Error comprobando favorito", e)
-             false
-         }
+    suspend fun isFavorito(actividadId: String, uidUsuario: String?): Boolean {
+        Log.d("fernando", "isFavoritoIDACtividad: $actividadId")
+        Log.d("fernando", "isFavoritoUID: $uidUsuario")
+        return try {
+            val document = firestore.collection("usuarios")
+                .document(uidUsuario.toString())
+                .collection("favoritos")
+                .document(actividadId)
+                .get()
+                .await() // Espera real
+            Log.d("fernando", "isFavorito: ${document.exists()}")
+            document.exists()
+        } catch (e: Exception) {
+            Log.e("Firestore", "Error comprobando favorito", e)
+            false
+        }
     }
 
 
