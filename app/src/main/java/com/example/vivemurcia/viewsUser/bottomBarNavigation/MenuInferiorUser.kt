@@ -54,6 +54,7 @@ fun MyBottomNavigation(navController: NavHostController) {
             )
         }, contentColor = MaterialTheme.colorScheme.onSurface, containerColor = MaterialTheme.colorScheme.surface , tonalElevation = 0.dp) {
         var index by remember { mutableIntStateOf(0) }
+
         NavigationBarItem(
             selected = index == 0,
             onClick = {
@@ -65,6 +66,7 @@ fun MyBottomNavigation(navController: NavHostController) {
                     launchSingleTop = true
                     // Restore state when reselecting a previously selected item
                     restoreState = true
+
                 }
             },
             label = { Text(fontSize = 12.sp, text = "Inicio") },

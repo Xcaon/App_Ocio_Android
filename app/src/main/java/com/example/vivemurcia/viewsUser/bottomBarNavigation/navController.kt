@@ -1,15 +1,10 @@
 package com.example.vivemurcia.views.bottomBar
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -17,6 +12,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.vivemurcia.views.config.Inicio
+import com.example.vivemurcia.views.home.HomeViewModel
 import com.example.vivemurcia.views.home.InicioHome
 import com.example.vivemurcia.viewsUser.MenuBuscador.InicioBuscador
 import com.example.vivemurcia.viewsUser.MenuFavoritos.InicioComposableFavoritos
@@ -59,8 +55,13 @@ fun MyApp() {
 
             // Dentro de cada ruta se pone el contenido que va a enseñar
             composable(Rutas.INICIO.nombreRuta) {
-                val focusManager = LocalFocusManager.current
-                InicioHome(navController)
+                    backStackEntry ->
+                // Recuperamos el ViewModel ligado al NavBackStackEntry de la ruta "INICIO"
+
+                // todo() Ver como mantengo el viewmodel vivo al cambiar de pantallas.
+                val homeViewModel = hiltViewModel<HomeViewModel>(backStackEntry)
+
+                InicioHome(navController, homeViewModel)
             }
 
             composable(Rutas.BUSCADOR.nombreRuta) {

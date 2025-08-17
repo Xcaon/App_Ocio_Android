@@ -1,5 +1,6 @@
 package com.example.vivemurcia.views.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vivemurcia.model.clases.Actividad
@@ -24,7 +25,7 @@ class HomeViewModel @Inject constructor(
     fun getActividadesDestacadas() {
 
         if ( _actividadesDestacadas.value.isNotEmpty()) return
-
+        Log.d("HomeViewModel", "getActividadesDestacadas: ${actividadesDestacadas.value} ")
         viewModelScope.launch {
 
             // Le decimos que destacadas queremos

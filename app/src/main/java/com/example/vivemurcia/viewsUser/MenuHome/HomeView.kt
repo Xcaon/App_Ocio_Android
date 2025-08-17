@@ -78,7 +78,6 @@ import com.example.vivemurcia.viewsCompany.ui.theme.VivemurciaTheme
 import com.example.vivemurcia.viewsUser.MenuHome.pantallaDetalle.ViewModelDetalle
 
 
-
 @AndroidEntryPoint
 class HomeView : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -93,7 +92,7 @@ class HomeView : ComponentActivity() {
 
 @Composable
 fun ViveMurciaApp() {
-    val themeViewModel : ThemeViewModel = hiltViewModel<ThemeViewModel>()
+    val themeViewModel: ThemeViewModel = hiltViewModel<ThemeViewModel>()
 
     LaunchedEffect(Unit) {
         themeViewModel.getTheme()
@@ -133,7 +132,12 @@ fun ActividadCardCuadrada(actividad: Actividad, onClickActividad: (Actividad) ->
                 .fillMaxWidth()
                 .height(150.dp)
                 .background(if (cargando.value) shimmerBrush() else SolidColor(Color.Transparent))
-                .border(4.dp, Color.Transparent, RoundedCornerShape(16.dp))
+                .border(4.dp, Color.Transparent, RoundedCornerShape(16.dp)).shadow(
+                    elevation = 2.dp, // qué tan intensa es la sombra
+                    shape = RoundedCornerShape(12.dp),
+                    clip = false, // true recorta también la sombra, false la deja expandirse,
+                    ambientColor = Color.Gray
+                )
         ) {
             AsyncImage(
                 modifier = Modifier
@@ -206,14 +210,21 @@ fun ActividadCard(actividad: Actividad, onClickActividad: (Actividad) -> Unit) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(125.dp)
-//                .background(if (cargando.value) shimmerBrush() else SolidColor(Color.White))
+                .height(125.dp).shadow(
+                    elevation = 2.dp, // qué tan intensa es la sombra
+                    shape = RoundedCornerShape(12.dp),
+                    clip = false, // true recorta también la sombra, false la deja expandirse,
+                    ambientColor = Color.Gray
+                )
 
         ) {
             AsyncImage(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .height(125.dp)
+                    .clip(RoundedCornerShape(12.dp)),
                 model = actividad.uriImagen,
                 contentDescription = "Imagen actividad",
-                modifier = Modifier.fillMaxSize().height(125.dp),
                 contentScale = ContentScale.Crop,
                 onState = { it: AsyncImagePainter.State ->
                     if (it is AsyncImagePainter.State.Success) {
