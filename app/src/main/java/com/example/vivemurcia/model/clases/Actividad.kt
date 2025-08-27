@@ -1,6 +1,7 @@
 package com.example.vivemurcia.model.clases
 
 import android.net.Uri
+import androidx.room.Entity
 import com.example.vivemurcia.model.enums.EnumAmbiente
 import com.example.vivemurcia.model.enums.EnumCategories
 import com.example.vivemurcia.model.enums.EnumGrupos

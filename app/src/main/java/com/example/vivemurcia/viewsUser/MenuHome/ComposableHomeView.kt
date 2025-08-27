@@ -1,6 +1,7 @@
 package com.example.vivemurcia.views.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,9 +40,9 @@ import com.example.vivemurcia.viewsUser.MenuHome.pantallaDetalle.ViewModelDetall
 
 
 @Composable
-fun InicioHome(navController: NavController, homeViewModel: HomeViewModel) {
+fun InicioHome(navController: NavController) {
 
-//    val homeViewModel: HomeViewModel = hiltViewModel<HomeViewModel>()
+    val homeViewModel: HomeViewModel = hiltViewModel<HomeViewModel>()
     val viewModelDetalle: ViewModelDetalle = hiltViewModel<ViewModelDetalle>()
 
     val listadoHorizontal: State<List<Actividad>> = homeViewModel.actividadesDestacadas.collectAsState()
@@ -51,9 +52,10 @@ fun InicioHome(navController: NavController, homeViewModel: HomeViewModel) {
         if ( listadoHorizontal.value.isEmpty() ){
             homeViewModel.getActividadesDestacadas()
         }
-//        if ( actividadesTodos.value.isEmpty() ){
-//            homeViewModel.getAllActividades()
-//        }
+        if ( actividadesTodos.value.isEmpty() ){
+            homeViewModel.getAllActividades()
+        }
+        homeViewModel.existeBaseDatos()
     }
 
 
@@ -130,13 +132,27 @@ fun InicioHome(navController: NavController, homeViewModel: HomeViewModel) {
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Text(
-                fontWeight = FontWeight.Normal,
-                fontFamily = FontFamily(Font(R.font.plusjakartasansbold)),
-                fontSize = 18.sp,
-                text = "Novedades",
-                textAlign = TextAlign.Center
-            )
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    fontWeight = FontWeight.Normal,
+                    fontFamily = FontFamily(Font(R.font.plusjakartasansbold)),
+                    fontSize = 18.sp,
+                    text = "Novedades",
+                    textAlign = TextAlign.Start
+                )
+                Text(
+                    modifier = Modifier.clickable {
+                        homeViewModel.cargarDatos()
+                        homeViewModel.cargarDestacadas()
+                    },
+                    fontWeight = FontWeight.Light,
+                    fontFamily = FontFamily(Font(R.font.plusjakartasansbold)),
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                    text = "Actualizar",
+                    textAlign = TextAlign.End)
+            }
             HorizontalDivider(thickness = 8.dp, color = Color.Transparent)
             if (actividadesTodos.value.isNotEmpty()) {
                 LazyHorizontalGrid(
@@ -175,7 +191,7 @@ fun InicioHome(navController: NavController, homeViewModel: HomeViewModel) {
         // 2 APARTADO: Destacados ////////////////////////////////////////////
         item { DestacadosLazyRow() }
         // 3 APARTADO: Actividades Novedades //////////////////////////////
-//        item { NovedadesLazyGrid() }
+        item { NovedadesLazyGrid() }
     }
 
 

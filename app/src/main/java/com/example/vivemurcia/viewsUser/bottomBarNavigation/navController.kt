@@ -55,13 +55,8 @@ fun MyApp() {
 
             // Dentro de cada ruta se pone el contenido que va a enseñar
             composable(Rutas.INICIO.nombreRuta) {
-                    backStackEntry ->
-                // Recuperamos el ViewModel ligado al NavBackStackEntry de la ruta "INICIO"
 
-                // todo() Ver como mantengo el viewmodel vivo al cambiar de pantallas.
-                val homeViewModel = hiltViewModel<HomeViewModel>(backStackEntry)
-
-                InicioHome(navController, homeViewModel)
+                InicioHome(navController)
             }
 
             composable(Rutas.BUSCADOR.nombreRuta) {

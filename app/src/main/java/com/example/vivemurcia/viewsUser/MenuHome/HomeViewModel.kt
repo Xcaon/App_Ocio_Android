@@ -1,11 +1,16 @@
 package com.example.vivemurcia.views.home
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.vivemurcia.data.Repository.ActividadesRepository
+import com.example.vivemurcia.data.room.AppDatabase
 import com.example.vivemurcia.model.clases.Actividad
 import com.example.vivemurcia.model.firebase.FireStoreModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -13,7 +18,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val fireStoreModel: FireStoreModel
+    @ApplicationContext private val context: Context,
+    private val fireStoreModel: FireStoreModel,
+    private val actividadesRepository: ActividadesRepository,
+    private val db: AppDatabase
 ) : ViewModel() {
 
     var _actividadesDestacadas = MutableStateFlow<List<Actividad>>(emptyList())
@@ -22,30 +30,59 @@ class HomeViewModel @Inject constructor(
     var _actividadesTodas = MutableStateFlow<List<Actividad>>(emptyList())
     val actividadesTodas = _actividadesTodas.asStateFlow()
 
+
     fun getActividadesDestacadas() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val lista = actividadesRepository.getAllDestacadas()
+            _actividadesDestacadas.value = lista
+        }
 
-        if ( _actividadesDestacadas.value.isNotEmpty()) return
-        Log.d("HomeViewModel", "getActividadesDestacadas: ${actividadesDestacadas.value} ")
-        viewModelScope.launch {
+    }
 
-            // Le decimos que destacadas queremos
-            var listaPeticion : List<String> = listOf("sCvtbUBSG6EE80RzRMYg", "3gFXlXwKzOg4Z6reHbOf", "937fEpccGoduIraSF48k", "MhzDNdqort8yIlsDvLqY", "Ue518MOgVtRF2PZr2eBp")
-            // Hacemos la peticion a fireStore
-            var destacadas = fireStoreModel.getDestacadas(listaPeticion)
-
-            _actividadesDestacadas.value = destacadas
+    fun getAllActividades() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val lista = actividadesRepository.getActividadesNovedades() // esta no
+            _actividadesTodas.value = lista
         }
     }
 
-
-    fun getAllActividades(){
-
-        if ( _actividadesTodas.value.isNotEmpty() ) return
-
-        viewModelScope.launch {
-            _actividadesTodas.value = fireStoreModel.getAllActividades(12)
+    fun cargarDatos() {
+        viewModelScope.launch(Dispatchers.IO) {
+            fireStoreModel.getActividadesRealtime(12).collect {
+                db.actividadDao().insertAll(db.actividadDao().mapToActividadDB(it, 0))
+                _actividadesTodas.value =
+                    db.actividadDao().mapToActividad(db.actividadDao().getAll())
+            }
         }
+
     }
+
+    fun cargarDestacadas() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val listaPeticion: List<String> = listOf(
+                "sCvtbUBSG6EE80RzRMYg",
+                "3gFXlXwKzOg4Z6reHbOf",
+                "937fEpccGoduIraSF48k",
+                "MhzDNdqort8yIlsDvLqY",
+                "Ue518MOgVtRF2PZr2eBp"
+            )
+
+            val listado = fireStoreModel.getDestacadas(listaPeticion)
+            actividadesRepository.introducirActividadesDestacadas(listado)
+        }
+
+    }
+
+    fun existeBaseDatos() {
+        val dbFile = context.getDatabasePath("database-vivemurcia") // nombre de tu DB
+
+        if (!dbFile.exists()) {
+            cargarDatos()
+            cargarDestacadas()
+        }
+
+    }
+
 
 }
 

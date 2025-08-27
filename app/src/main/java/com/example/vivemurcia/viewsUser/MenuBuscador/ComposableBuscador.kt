@@ -91,7 +91,7 @@ fun InicioBuscador(navController: NavHostController) {
 
     // Llamamos al viewModel para que nos devuelva todas las actividades, lo pedimos 1 vez
     LaunchedEffect(Unit) {
-        buscadorViewModel.getAllActividades()
+//        buscadorViewModel.getAllActividades()
     }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)

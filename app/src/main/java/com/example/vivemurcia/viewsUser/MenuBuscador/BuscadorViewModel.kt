@@ -25,14 +25,14 @@ class BuscadorViewModel @Inject constructor(
     val actividadesFiltradasParaSearch = _actividadesFiltradasParaSearch.asStateFlow()
 
 
-    // Esto se llama solo 1 vez desde el composable
-    fun getAllActividades() {
-        viewModelScope.launch {
-            _actividadesAll.value = fireStoreModel.getAllActividades(999)
-            _actividadesFiltradasParaSearch.value =
-                _actividadesAll.value // Le asignamos los valores para que el listado se alimente
-        }
-    }
+//    // Esto se llama solo 1 vez desde el composable
+//    fun getAllActividades() {
+//        viewModelScope.launch {
+//            _actividadesAll.value = fireStoreModel.getAllActividades(999)
+//            _actividadesFiltradasParaSearch.value =
+//                _actividadesAll.value // Le asignamos los valores para que el listado se alimente
+//        }
+//    }
 
     fun buscarActividades(query: String) {
         viewModelScope.launch {

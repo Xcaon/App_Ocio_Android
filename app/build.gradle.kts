@@ -6,6 +6,7 @@ plugins {
     id("com.google.gms.google-services")
     id("com.google.dagger.hilt.android")
     id("kotlin-kapt")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -45,38 +46,51 @@ android {
 }
 
 dependencies {
-    implementation("androidx.compose.material:material-icons-extended:1.6.1")
-    implementation("androidx.datastore:datastore-preferences:1.1.5")
 
-    // Coil
-    implementation("io.coil-kt:coil-compose:2.4.0")
+    val roomVersion = "2.7.2"
 
-    // Glide
-    implementation("com.github.bumptech.glide:glide:4.16.0")
-    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
-    implementation("com.github.skydoves:landscapist-glide:2.2.5")
-    implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
-
-    // FireStore
-    implementation("com.google.firebase:firebase-firestore-ktx")
-
-    //Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
-    implementation(libs.firebase.auth.ktx)
-    implementation("com.google.android.gms:play-services-auth:21.3.0")
-    implementation("com.google.firebase:firebase-analytics")
-    // Storage
-    implementation("com.google.firebase:firebase-storage")
-    /* */
+    // Room Runtime
+    implementation("androidx.room:room-runtime:$roomVersion")
+    // Room Compiler
+    ksp("androidx.room:room-compiler:$roomVersion")
+    // Opcional: Extensiones Kotlin y corrutinas
+    implementation("androidx.room:room-ktx:$roomVersion")
 
     // Dagger Hilt
-    implementation("com.google.dagger:hilt-android:2.48")
-    kapt("com.google.dagger:hilt-android-compiler:2.48")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
 
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
-    implementation("androidx.navigation:navigation-compose:2.8.9")
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.navigation.compose)
 
+    // Coil
+    implementation(libs.coil.compose)
+
+    // Glide
+    implementation(libs.glide)
+    annotationProcessor(libs.compiler)
+    implementation(libs.landscapist.glide)
+    implementation(libs.compose)
+
+    // Material Icons Extended
+    implementation(libs.androidx.material.icons.extended)
+
+    // DataPreferences
+    implementation(libs.androidx.datastore.preferences)
+
+
+    // FireStore
+    implementation(libs.firebase.firestore.ktx)
+
+    //Firebase
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.play.services.auth)
+    implementation(libs.google.firebase.analytics)
+    // Bom
+    implementation(platform(libs.firebase.bom))
+    // Storage
+    implementation(libs.firebase.storage)
 
 
     implementation(libs.androidx.core.ktx)

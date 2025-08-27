@@ -3,9 +3,12 @@ package com.example.vivemurcia.model.firebase
 import android.net.Uri
 import android.util.Log
 import com.example.vivemurcia.data.response.ActividadResponse
+import com.example.vivemurcia.data.room.ActividadDB
+import com.example.vivemurcia.data.room.AppDatabase
 import com.example.vivemurcia.model.clases.Actividad
 import com.example.vivemurcia.model.clases.Categoria
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.MetadataChanges
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.Source
@@ -13,14 +16,19 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
 class FireStoreModel @Inject constructor(
-    private val firestore: FirebaseFirestore, private val storage: FireStorageModel
+    private val firestore: FirebaseFirestore,
+    private val storage: FireStorageModel
 ) {
 
     companion object {
@@ -48,14 +56,11 @@ class FireStoreModel @Inject constructor(
 
             val document = firestore.collection(COLLECTION_ACTIVIDADES)
                 .document(idActividad)
-                .get(Source.CACHE).addOnFailureListener {
-                    firestore.collection(COLLECTION_ACTIVIDADES)
-                        .document(idActividad).get(Source.SERVER)
-                }
+                .get(Source.SERVER)
                 .await()
 
             val response = document.toObject(ActividadResponse::class.java) ?: continue
-            var actividad = response.toDomain()
+            val actividad = response.toDomain()
             actividad.idActividad = document.id
 
             // Recuperar imagen en segundo plano
@@ -66,41 +71,47 @@ class FireStoreModel @Inject constructor(
 
             documentos.add(actividad)
         }
-
+        Log.d("HomeViewModel", "getActividadesDestacadasModel: $documentos")
         return documentos
 
     }
 
 
-    // Nos devuelve todas las actividades
-    suspend fun getAllActividades(limit: Long): List<Actividad> {
-
-        val query = firestore.collection(COLLECTION_ACTIVIDADES)
+    fun getActividadesRealtime(limit: Long): Flow<List<Actividad>> = callbackFlow {
+        val listener = firestore.collection(COLLECTION_ACTIVIDADES)
             .orderBy("fechaHoraActividad", Query.Direction.DESCENDING)
             .limit(limit)
-
-        val snapshot = try {
-            query.get(Source.CACHE).await()
-        } catch (e: Exception) {
-            query.get(Source.SERVER).await()
-        }
-
-        val actividades = snapshot.documents.map { doc ->
-            val response = doc.toObject(ActividadResponse::class.java)!!
-            response.toDomain().apply { idActividad = doc.id }
-        }
-
-        // Lanzamos la descarga de imágenes en paralelo
-        val actividadesConImagenes = coroutineScope {
-            actividades.map { actividad ->
-                async {
-                    val imagenUri = storage.getImagen(actividad.tituloActividad, actividad.idEmpresa)
-                    actividad.apply { uriImagen = imagenUri }
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error) // cierra el flow en caso de error
+                    return@addSnapshotListener
                 }
-            }.awaitAll() // Aquí esperamos todas y devolvemos la lista ya modificada
-        }
+                Log.d("fernando", "cargo datos")
 
-        return actividadesConImagenes
+                val docs = snapshot?.documents ?: emptyList()
+
+                // Lanzamos una corrutina para descargar imágenes en paralelo
+                try {
+                    // coroutineScope dentro de callbackFlow
+                    val actividadesConImagenes = runBlocking {
+                        coroutineScope {
+                            docs.map { doc ->
+                                async {
+                                    val response = doc.toObject(ActividadResponse::class.java)!!
+                                    val actividad = response.toDomain().apply { idActividad = doc.id }
+                                    val imagenUri = storage.getImagen(actividad.tituloActividad, actividad.idEmpresa)
+                                    actividad.apply { uriImagen = imagenUri }
+                                }
+                            }.awaitAll()
+                        }
+                    }
+                    trySend(actividadesConImagenes) // emitimos la lista actualizada
+                } catch (e: Exception) {
+                    close(e)
+                }
+            }
+
+        awaitClose { listener.remove() } // removemos el listener al cancelar el flow
     }
 
     // Subir actividad
