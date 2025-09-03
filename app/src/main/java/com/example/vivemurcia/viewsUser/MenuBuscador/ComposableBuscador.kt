@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -62,6 +64,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.bumptech.glide.integration.compose.placeholder
@@ -91,7 +94,7 @@ fun InicioBuscador(navController: NavHostController) {
 
     // Llamamos al viewModel para que nos devuelva todas las actividades, lo pedimos 1 vez
     LaunchedEffect(Unit) {
-//        buscadorViewModel.getAllActividades()
+        buscadorViewModel.getAllActividades()
     }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -113,11 +116,12 @@ fun InicioBuscador(navController: NavHostController) {
                 contentColor = Color.White,
                 text = {
                     Text(
+                        fontSize = 16.sp,
                         fontFamily = FontFamily(Font(R.font.plusjakartasansmedium)),
                         text = "Filtrar"
                     )
                 },
-                icon = { Icon(Icons.Filled.Tune, contentDescription = "") },
+                icon = { Icon(modifier = Modifier.size(24.dp) ,imageVector = Icons.Filled.Tune, contentDescription = "") },
                 onClick = {
                     showBottomSheet = true
                 }
@@ -172,6 +176,7 @@ fun InicioBuscador(navController: NavHostController) {
                 windowInsets = WindowInsets(0, 0, 0, 0)
 
             ) {}
+
         }) { innerPadding ->
         if (listadoAllActividades.isNotEmpty()) {
             LazyVerticalGrid(
@@ -337,7 +342,7 @@ fun InicioBuscador(navController: NavHostController) {
                         ) {
 
                             Button(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier.fillMaxWidth().height(48.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = colorPrimario,
                                     contentColor = Color.White

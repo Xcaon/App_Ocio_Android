@@ -185,39 +185,6 @@ class FireStoreModel @Inject constructor(
     }
 
 
-    fun borrarDeFavoritos(actividadValue: Actividad?, uidUsuario: String?) {
-        try {
-            firestore.collection("usuarios").document(uidUsuario.toString())
-                .collection("favoritos").document(actividadValue?.idActividad.toString())
-                .delete()
-                .addOnSuccessListener {
-                    Log.d("Firestore", "Favorito borrado correctamente")
-                }
-                .addOnFailureListener { e ->
-                    Log.e("Firestore", "Error al borrar el favorito", e)
-                }
-        } catch (e: Exception) {
-            Log.e("Firestore", "Error al borrar el favorito", e)
-        }
-    }
-
-    suspend fun isFavorito(actividadId: String, uidUsuario: String?): Boolean {
-        Log.d("fernando", "isFavoritoIDACtividad: $actividadId")
-        Log.d("fernando", "isFavoritoUID: $uidUsuario")
-        return try {
-            val document = firestore.collection("usuarios")
-                .document(uidUsuario.toString())
-                .collection("favoritos")
-                .document(actividadId)
-                .get()
-                .await() // Espera real
-            Log.d("fernando", "isFavorito: ${document.exists()}")
-            document.exists()
-        } catch (e: Exception) {
-            Log.e("Firestore", "Error comprobando favorito", e)
-            false
-        }
-    }
 
 
 }

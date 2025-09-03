@@ -53,6 +53,7 @@ import coil.compose.AsyncImage
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.example.vivemurcia.R
 import androidx.core.net.toUri
+import com.example.vivemurcia.model.clases.Actividad
 import com.example.vivemurcia.ui.theme.negroIconos
 import com.example.vivemurcia.viewsCompany.createActivity.Espaciado
 import com.example.vivemurcia.viewsCompany.ui.theme.botonNaranja
@@ -71,7 +72,7 @@ fun MostrarActividadDetalle(idActividad: String?, categoriaActividad: String?) {
     val viewModelDetalle: ViewModelDetalle = hiltViewModel<ViewModelDetalle>()
 
     val actividad = viewModelDetalle.actividad.collectAsState()
-    val actividadValue = actividad.value
+    val actividadValue: Actividad? = actividad.value
 
 
     val isFav by viewModelDetalle.isFav.collectAsState()
@@ -190,12 +191,12 @@ fun MostrarActividadDetalle(idActividad: String?, categoriaActividad: String?) {
                         )
                     }
                 }
-            } else if (isFav == false){
+            } else {
                 Button(
                     modifier = Modifier.weight(1f),
                     onClick = {
                         Toast.makeText(context, "Actividad guardada", Toast.LENGTH_SHORT).show()
-                        viewModelDetalle.addActividadListaFavoritos(idActividad, categoriaActividad)
+                        viewModelDetalle.addActividadListaFavoritos(idActividad)
                     },
                     colors = ButtonColors(
                         containerColor = Color.Blue,

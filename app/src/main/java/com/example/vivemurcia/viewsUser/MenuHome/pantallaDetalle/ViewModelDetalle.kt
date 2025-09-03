@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.example.vivemurcia.data.Repository.ActividadesRepository
 import com.example.vivemurcia.model.clases.Actividad
 import com.example.vivemurcia.model.firebase.FireStorageModel
 import com.example.vivemurcia.model.firebase.FireStoreModel
@@ -14,6 +15,7 @@ import com.example.vivemurcia.model.sharedPreferences.PreferencesConfig.getUserI
 import com.example.vivemurcia.views.bottomBar.Rutas
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,7 +26,8 @@ import javax.inject.Inject
 class ViewModelDetalle @Inject constructor(
     private val fireStoreModel: FireStoreModel,
     private val storage: FireStorageModel,
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val repository: ActividadesRepository
 ) : ViewModel() {
 
     var _actividad = MutableStateFlow<Actividad?>(null)
@@ -81,34 +84,25 @@ class ViewModelDetalle @Inject constructor(
         return storage.getImagen(tituloActividad, idEmpresa)
     }
 
-    fun addActividadListaFavoritos(idActividad: String?, categoriaActividad: String?) {
+    fun addActividadListaFavoritos(idActividad: String?) {
         Log.d("fernando", "addActividadListaFavoritos: $idActividad")
-        viewModelScope.launch {
-            fireStoreModel.subirActividadListaFavoritos(
-                idActividad,
-                getUserId(context),
-                categoriaActividad
-            )
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.setFavorito(idActividad, 1)
             _isFav.value = !_isFav.value
         }
 
     }
-
-
 
     fun borrarDeFavoritos(actividadValue: Actividad?) {
-        viewModelScope.launch {
-            val uidUsuario: String? = getUserId(context)
-            fireStoreModel.borrarDeFavoritos(actividadValue, uidUsuario)
-            _isFav.value = !_isFav.value
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.setFavorito(actividadValue?.idActividad, 0)
+            _isFav.value = false
         }
     }
 
-    fun isFavorito(actividad: String) {
-        viewModelScope.launch {
-            val uidUsuario: String? = getUserId(context)
-            val isFav = fireStoreModel.isFavorito(actividad, uidUsuario)
-            Log.d("fernando", "isFavorito: $isFav")
+    fun isFavorito(idActividad: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val isFav = repository.isFav(idActividad)
             _isFav.value = isFav
         }
     }

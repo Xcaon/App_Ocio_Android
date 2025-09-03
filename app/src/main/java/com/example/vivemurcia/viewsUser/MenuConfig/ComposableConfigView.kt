@@ -93,13 +93,8 @@ fun Inicio() {
         Espaciado(24)
 
         TextButton(onClick = {
-            val intent = Intent(Intent.ACTION_SENDTO).apply {
-                data =
-                    Uri.parse("mailto:fernandohanloncuenca@gmail.com") // Dirección del destinatario
-                putExtra(Intent.EXTRA_SUBJECT, "Sugerencia para mejorar la app ViveMurcia")
-                putExtra(
-                    Intent.EXTRA_TEXT,
-                    """
+            val subject = Uri.encode("Sugerencia para mejorar la app ViveMurcia")
+            val body = Uri.encode("""
 Hola equipo de ViveMurcia,
 
 Quería compartir una sugerencia para mejorar la app:
@@ -116,11 +111,12 @@ Quería compartir una sugerencia para mejorar la app:
 Gracias por crear esta app, ¡sigo disfrutando de las actividades que descubrí gracias a ella!
 
 Un saludo.
-                """.trimIndent()
-                )
+""".trimIndent())
+
+            val intent = Intent(Intent.ACTION_SENDTO).apply {
+                data = Uri.parse("mailto:fernandohanloncuenca@gmail.com?subject=$subject&body=$body")
             }
 
-            // Abre la app de correo si hay una instalada
             try {
                 context.startActivity(intent)
             } catch (e: ActivityNotFoundException) {
@@ -136,13 +132,22 @@ Un saludo.
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(
-                    modifier = Modifier.weight(1.5f),
-                    fontFamily = FontFamily(Font(R.font.plusjakartasansregular)),
-                    fontSize = 18.sp,
-                    text = "Sugerencias",
-                    color = MaterialTheme.colorScheme.onBackground
-                )
+                Column (modifier = Modifier.fillMaxWidth().height(50.dp).weight(1.5f)) {
+                    Text(
+                        fontFamily = FontFamily(Font(R.font.plusjakartasansregular)),
+                        fontSize = 18.sp,
+                        text = "Sugerencias",
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Text(
+                        modifier = Modifier.weight(1.5f),
+                        fontFamily = FontFamily(Font(R.font.plusjakartasansregular)),
+                        fontSize = 12.sp,
+                        text = "Apóyanos dejando una sugerencia",
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+
                 Icon(
                     modifier = Modifier.weight(1f),
                     imageVector = Icons.Default.ArrowForward,
@@ -176,41 +181,42 @@ Un saludo.
             }
         }
 
-        TextButton(onClick = {
+//        TextButton(onClick = {
+//
+//        }) {
+//            Row(
+//                verticalAlignment = Alignment.CenterVertically,
+//                modifier = Modifier.fillMaxWidth()
+//            ) {
+//                Text(
+//                    modifier = Modifier.weight(1.5f),
+//                    fontFamily = FontFamily(Font(R.font.plusjakartasansregular)),
+//                    fontSize = 18.sp,
+//                    text = "Tema Claro/Oscuro",
+//                    color = MaterialTheme.colorScheme.onBackground
+//                )
+//                Checkbox(
+//                    modifier = Modifier.weight(1f),
+//                    checked = isDark,
+//                    onCheckedChange = { it: Boolean ->
+//                        saveThemeColor(context, it)
+//                        themeViewModel.setTheme(it)
+//                        Toast.makeText(
+//                            context,
+//                            "Reiniciar App para aplicar cambios",
+//                            Toast.LENGTH_LONG
+//                        ).show()
+//                    },
+//                    colors = CheckboxDefaults.colors(
+//                        checkedColor = colorPrimario,      // Color del borde y fondo al marcar
+//                        uncheckedColor = Color.Gray,     // Color del borde al desmarcar
+//                        checkmarkColor = Color.White     // Color del tick ✓
+//                    )
+//                )
+//            }
+//        }
 
-        }) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    modifier = Modifier.weight(1.5f),
-                    fontFamily = FontFamily(Font(R.font.plusjakartasansregular)),
-                    fontSize = 18.sp,
-                    text = "Claro/Oscuro",
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Checkbox(
-                    modifier = Modifier.weight(1f),
-                    checked = isDark,
-                    onCheckedChange = { it: Boolean ->
-                        saveThemeColor(context, it)
-                        themeViewModel.setTheme(it)
-                        Toast.makeText(
-                            context,
-                            "Reiniciar App para aplicar cambios",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    },
-                    colors = CheckboxDefaults.colors(
-                        checkedColor = colorPrimario,      // Color del borde y fondo al marcar
-                        uncheckedColor = Color.Gray,     // Color del borde al desmarcar
-                        checkmarkColor = Color.White     // Color del tick ✓
-                    )
-                )
-            }
-        }
-
+        Espaciado(36)
         TextButton(onClick = {
             Cerrar(context)
         }) {

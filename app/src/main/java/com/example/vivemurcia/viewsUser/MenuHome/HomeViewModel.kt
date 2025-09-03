@@ -48,13 +48,12 @@ class HomeViewModel @Inject constructor(
 
     fun cargarDatos() {
         viewModelScope.launch(Dispatchers.IO) {
-            fireStoreModel.getActividadesRealtime(12).collect {
-                db.actividadDao().insertAll(db.actividadDao().mapToActividadDB(it, 0))
+            fireStoreModel.getActividadesRealtime(100).collect {listadoActividades ->
+                db.actividadDao().insertAll(db.actividadDao().mapToActividadDB(listadoActividades, 0))
                 _actividadesTodas.value =
                     db.actividadDao().mapToActividad(db.actividadDao().getAll())
             }
         }
-
     }
 
     fun cargarDestacadas() {

@@ -24,6 +24,7 @@ data class ActividadDB(
     val tipoDeGrupo: EnumGrupos?,
     val ubicacionActividad: String?,
     val uriImagen: String?,
-    val esDestacada: Int // Si es 0 no es destacada, si es 1 es destacada
+    val esDestacada: Int, // Si es 0 no es destacada, si es 1 es destacada,
+    val esFavorito: Int, // 0 si no es favorito, 1 si es favorito
 )
 

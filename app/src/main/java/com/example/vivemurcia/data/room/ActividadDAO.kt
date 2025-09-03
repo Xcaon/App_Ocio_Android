@@ -6,6 +6,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.example.vivemurcia.model.clases.Actividad
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.flow.Flow
@@ -15,8 +16,23 @@ import java.util.Date
 @Dao
 interface ActividadDAO {
 
-    @Query("SELECT * FROM ActividadDB LIMIT 10")
+    @Query("SELECT * FROM ActividadDB where esFavorito = 1")
+    fun getFavoritos(): List<ActividadDB>
+
+    @Query("Select esFavorito FROM ActividadDB where idActividad = :idActividad")
+    fun isFav(idActividad: String): Int
+
+    // Hacemos uso de ':' para referirnos al parametro recibido por  funcion
+    @Query("UPDATE ActividadDB SET esFavorito = :isFavValue WHERE idActividad = :idActividad")
+    fun setDeleteFav(idActividad: String, isFavValue: Int)
+
+    // Este es para el home
+    @Query("SELECT * FROM ActividadDB LIMIT 12")
     fun getAll(): List<ActividadDB>
+
+    // Para la pantalla de busquedas
+    @Query("SELECT * FROM ActividadDB")
+    fun getAllBusqueda(): List<ActividadDB>
 
     @Query("SELECT * FROM ActividadDB WHERE esDestacada = 1")
     fun getAllDestacadas(): List<ActividadDB>
@@ -28,8 +44,7 @@ interface ActividadDAO {
     @Query("DELETE FROM ActividadDB")
     fun deleteAll()
 
-    fun mapToActividadDB(listadoActividades: List<Actividad>, esDestacada: Int): List<ActividadDB>  {
-
+    fun mapToActividadDB(listadoActividades: List<Actividad>, esDestacada: Int): List<ActividadDB> {
 
         val actividadDB: List<ActividadDB> = listadoActividades.map {
             ActividadDB(
@@ -44,13 +59,14 @@ interface ActividadDAO {
                 tipoDeGrupo = it.tipoDeGrupo,
                 ubicacionActividad = it.ubicacionActividad,
                 uriImagen = it.uriImagen.toString(),
-                esDestacada = esDestacada
+                esDestacada = esDestacada,
+                esFavorito = 0
             )
         }
         return actividadDB
     }
 
-    fun mapToActividad(listadoActividades: List<ActividadDB>): List<Actividad>  {
+    fun mapToActividad(listadoActividades: List<ActividadDB>): List<Actividad> {
         val actividades: List<Actividad> = listadoActividades.map {
             Actividad(
                 idActividad = it.idActividad,
@@ -69,7 +85,6 @@ interface ActividadDAO {
 
         return actividades
     }
-
 
 
 //    @Query("SELECT * FROM user WHERE uid IN (:userIds)")

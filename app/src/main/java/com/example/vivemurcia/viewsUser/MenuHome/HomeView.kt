@@ -127,32 +127,51 @@ fun ActividadCardCuadrada(actividad: Actividad, onClickActividad: (Actividad) ->
                 onClickActividad(actividad)
             }
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(150.dp)
-                .background(if (cargando.value) shimmerBrush() else SolidColor(Color.Transparent))
-                .border(4.dp, Color.Transparent, RoundedCornerShape(16.dp)).shadow(
-                    elevation = 2.dp, // qué tan intensa es la sombra
-                    shape = RoundedCornerShape(12.dp),
-                    clip = false, // true recorta también la sombra, false la deja expandirse,
-                    ambientColor = Color.Gray
-                )
-        ) {
-            AsyncImage(
+        if (cargando.value){
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(12.dp))
-                    .fillMaxWidth(),
-                model = actividad.uriImagen,
-                contentDescription = "Actividad",
-                contentScale = ContentScale.Crop,
-                onState = { it: AsyncImagePainter.State ->
-                    if (it is AsyncImagePainter.State.Success) {
-                        cargando.value = false
+                    .fillMaxWidth()
+                    .height(150.dp)
+                    .background( shimmerBrush())
+            ) {
+                AsyncImage(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(12.dp))
+                        .fillMaxWidth(),
+                    model = actividad.uriImagen,
+                    contentDescription = "Actividad",
+                    contentScale = ContentScale.Crop,
+                    onState = { it: AsyncImagePainter.State ->
+                        if (it is AsyncImagePainter.State.Success) {
+                            cargando.value = false
+                        }
                     }
-                }
-            )
+                )
+            }
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
+                    .background(if (cargando.value) shimmerBrush() else SolidColor(Color.Transparent))
+                    .shadow(6.dp, RoundedCornerShape(12.dp), clip = false, Color.Black)
+            ) {
+                AsyncImage(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(12.dp))
+                        .fillMaxWidth(),
+                    model = actividad.uriImagen,
+                    contentDescription = "Actividad",
+                    contentScale = ContentScale.Crop,
+                    onState = { it: AsyncImagePainter.State ->
+                        if (it is AsyncImagePainter.State.Success) {
+                            cargando.value = false
+                        }
+                    }
+                )
+            }
         }
 
         // Datos: Titulo y fecha de la actividad
@@ -201,37 +220,59 @@ fun ActividadCard(actividad: Actividad, onClickActividad: (Actividad) -> Unit) {
         modifier = Modifier
             .width(tarjetaAncho)
             .height(200.dp)
-            .padding(4.dp)
+            .padding(8.dp)
             .clickable {
                 onClickActividad(actividad)
             }
     ) {
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(125.dp).shadow(
-                    elevation = 2.dp, // qué tan intensa es la sombra
-                    shape = RoundedCornerShape(12.dp),
-                    clip = false, // true recorta también la sombra, false la deja expandirse,
-                    ambientColor = Color.Gray
-                )
-
-        ) {
-            AsyncImage(
+        if ( cargando.value) {
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
                     .height(125.dp)
-                    .clip(RoundedCornerShape(12.dp)),
-                model = actividad.uriImagen,
-                contentDescription = "Imagen actividad",
-                contentScale = ContentScale.Crop,
-                onState = { it: AsyncImagePainter.State ->
-                    if (it is AsyncImagePainter.State.Success) {
-                        cargando.value = false
+                    .background(brush = shimmerBrush())
+            ) {
+                AsyncImage(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .height(125.dp)
+                        .clip(RoundedCornerShape(12.dp)),
+                    model = actividad.uriImagen,
+                    contentDescription = "Imagen actividad",
+                    contentScale = ContentScale.Crop,
+                    onState = { it: AsyncImagePainter.State ->
+                        if (it is AsyncImagePainter.State.Success) {
+                            cargando.value = false
+                        }
                     }
-                }
-            )
+                )
+            }
+        } else {
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(125.dp)
+                    .background(if (cargando.value) shimmerBrush() else SolidColor(Color.Transparent))
+                    .shadow(6.dp, RoundedCornerShape(12.dp), clip = false, Color.Black)
+
+            ) {
+                AsyncImage(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .height(125.dp)
+                        .clip(RoundedCornerShape(12.dp)),
+                    model = actividad.uriImagen,
+                    contentDescription = "Imagen actividad",
+                    contentScale = ContentScale.Crop,
+                    onState = { it: AsyncImagePainter.State ->
+                        if (it is AsyncImagePainter.State.Success) {
+                            cargando.value = false
+                        }
+                    }
+                )
+            }
         }
 
         // Datos: Titulo y fecha de la actividad

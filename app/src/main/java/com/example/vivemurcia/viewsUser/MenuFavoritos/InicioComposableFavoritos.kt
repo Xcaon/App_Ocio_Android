@@ -36,8 +36,8 @@ import com.example.vivemurcia.viewsUser.MenuHome.pantallaDetalle.ViewModelDetall
 @Composable
 fun InicioComposableFavoritos(navController: NavController) {
 
-    var viewModel: ViewModelFavoritos = hiltViewModel<ViewModelFavoritos>()
-    var favoritos: State<List<Actividad>> = viewModel.favorito.collectAsState()
+    val viewModel: ViewModelFavoritos = hiltViewModel<ViewModelFavoritos>()
+    val favoritos: State<List<Actividad>> = viewModel.favorito.collectAsState()
     val viewModelDetalle : ViewModelDetalle = hiltViewModel<ViewModelDetalle>()
 
     LaunchedEffect(Unit) {
