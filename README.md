@@ -22,3 +22,5 @@ Weekend Planner es una aplicación Android diseñada para ayudar a las personas 
 - **Backend:** Firebase Firestore, Firebase Functions  
 - **Integraciones:** OpenAI API para recomendaciones inteligentes  
 - **Control de versiones:** Git / GitHub  
+
+![Home Screen](app/src/main/res/ScreenShots/viemurcia.png)
