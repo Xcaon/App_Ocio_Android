@@ -37,7 +37,7 @@ class FireStoreModel @Inject constructor(
 
     suspend fun getSingleActivity(idActividad: String, categoriaActividad: String): Actividad? {
         return try {
-            firestore.collection(COLLECTION_ACTIVIDADES + categoriaActividad)
+            firestore.collection(COLLECTION_ACTIVIDADES)
                 .document(idActividad)
                 .get(Source.DEFAULT)
                 .await().toObject(ActividadResponse::class.java)!!.toDomain()
@@ -117,7 +117,7 @@ class FireStoreModel @Inject constructor(
     // Subir actividad
     suspend fun subirActividad(actividad: Actividad): Boolean {
         return try {
-            firestore.collection(COLLECTION_ACTIVIDADES + actividad.categoriaActividad)
+            firestore.collection("actividades")
                 .add(actividad).await()
             true
         } catch (e: Exception) {

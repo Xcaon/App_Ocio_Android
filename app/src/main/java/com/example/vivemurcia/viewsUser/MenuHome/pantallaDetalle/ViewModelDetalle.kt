@@ -65,10 +65,15 @@ class ViewModelDetalle @Inject constructor(
 
     fun PintarActividadDetalle(idActividad: String, categoriaActividad: String?) {
 
-        viewModelScope.launch {
-            var actividad = fireStoreModel.getSingleActivity(idActividad, categoriaActividad.toString())
+        viewModelScope.launch(Dispatchers.IO) {
+
+//            val actividad = fireStoreModel.getSingleActivity(idActividad, categoriaActividad.toString())
+            // Traemos de Room la actividad
+            val actividad = repository.getActividadById(idActividad)
             _actividad.value = actividad
-            Log.d("fernando", "PintarActividadDetalle: ${actividad?.idActividad}")
+
+            Log.d("fernando", "PintarActividadDetalle: $idActividad")
+
             _actividad.value!!.idActividad = idActividad
 
             actividad?.let {
@@ -77,6 +82,7 @@ class ViewModelDetalle @Inject constructor(
                     actividad.idEmpresa
                 )
             }
+
         }
     }
 

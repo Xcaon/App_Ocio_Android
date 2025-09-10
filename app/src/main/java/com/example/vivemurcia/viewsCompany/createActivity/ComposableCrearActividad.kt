@@ -134,7 +134,7 @@ fun InicioCrearActividad() {
             ambienteActividad.value = it
 //            Log.i("fernando", "Se ha guardado el ambiente $it")
         }
-        ReservasServicio()
+//        ReservasServicio()
 
         var actividadCreada: Actividad = Actividad(
             idActividad = null,
@@ -332,34 +332,34 @@ fun BotonesCrearActividad(onClick: () -> Unit) {
     Espaciado()
 }
 
-@Suppress("DEPRECATION")
-@Preview(showBackground = true)
-@Composable
-fun ReservasServicio() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(80.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Absolute.Center
-    ) {
-        OutlinedCard(
-            modifier = Modifier
-                .height(80.dp)
-                .fillMaxWidth()
-        ) {
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(text = "Click para configurar el Sistema de Reservas", fontSize = 16.sp)
-                Icon(imageVector = Icons.Filled.KeyboardArrowRight, contentDescription = "Icono")
-            }
-        }
-    }
-    Espaciado()
-}
+//@Suppress("DEPRECATION")
+//@Preview(showBackground = true)
+//@Composable
+//fun ReservasServicio() {
+//    Row(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .height(80.dp),
+//        verticalAlignment = Alignment.CenterVertically,
+//        horizontalArrangement = Arrangement.Absolute.Center
+//    ) {
+//        OutlinedCard(
+//            modifier = Modifier
+//                .height(80.dp)
+//                .fillMaxWidth()
+//        ) {
+//            Row(
+//                modifier = Modifier.fillMaxSize(),
+//                verticalAlignment = Alignment.CenterVertically,
+//                horizontalArrangement = Arrangement.Center
+//            ) {
+//                Text(text = "Click para configurar el Sistema de Reservas", fontSize = 16.sp)
+//                Icon(imageVector = Icons.Filled.KeyboardArrowRight, contentDescription = "Icono")
+//            }
+//        }
+//    }
+//    Espaciado()
+//}
 
 @Composable
 fun AmbienteServicio(opcionEscogida: (EnumAmbiente) -> Unit) {

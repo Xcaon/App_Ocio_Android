@@ -21,7 +21,8 @@ class HomeViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val fireStoreModel: FireStoreModel,
     private val actividadesRepository: ActividadesRepository,
-    private val db: AppDatabase
+    private val db: AppDatabase,
+    private val repository: ActividadesRepository
 ) : ViewModel() {
 
     var _actividadesDestacadas = MutableStateFlow<List<Actividad>>(emptyList())
@@ -31,14 +32,6 @@ class HomeViewModel @Inject constructor(
     val actividadesTodas = _actividadesTodas.asStateFlow()
 
 
-    fun getActividadesDestacadas() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val lista = actividadesRepository.getAllDestacadas()
-            _actividadesDestacadas.value = lista
-        }
-
-    }
-
     fun getAllActividades() {
         viewModelScope.launch(Dispatchers.IO) {
             val lista = actividadesRepository.getActividadesNovedades() // esta no
@@ -46,10 +39,11 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun cargarDatos() {
+    suspend fun cargarDatos() {
         viewModelScope.launch(Dispatchers.IO) {
-            fireStoreModel.getActividadesRealtime(100).collect {listadoActividades ->
-                db.actividadDao().insertAll(db.actividadDao().mapToActividadDB(listadoActividades, 0))
+            fireStoreModel.getActividadesRealtime(100).collect { listadoActividades ->
+                db.actividadDao()
+                    .insertAll(db.actividadDao().mapToActividadDB(listadoActividades, 0))
                 _actividadesTodas.value =
                     db.actividadDao().mapToActividad(db.actividadDao().getAll())
             }
@@ -58,26 +52,30 @@ class HomeViewModel @Inject constructor(
 
     fun cargarDestacadas() {
         viewModelScope.launch(Dispatchers.IO) {
+
             val listaPeticion: List<String> = listOf(
-                "sCvtbUBSG6EE80RzRMYg",
-                "3gFXlXwKzOg4Z6reHbOf",
-                "937fEpccGoduIraSF48k",
-                "MhzDNdqort8yIlsDvLqY",
-                "Ue518MOgVtRF2PZr2eBp"
+                "zXLw2ZgDrSBIjbNnuHwc",
+                "0pb4CtZFJM5JCYRH2Oui",
+                "GJOZTNLI8WD73D73WFJQ",
+                "JpHqiz7pP6Tx3RYQIXaf",
+                "OumrusxfVuZPGCD8xOIE"
             )
 
-            val listado = fireStoreModel.getDestacadas(listaPeticion)
-            actividadesRepository.introducirActividadesDestacadas(listado)
+            actividadesRepository.introducirActividadesDestacadas(listaPeticion)
+
+            val listado = repository.getAllDestacadas()
+            _actividadesDestacadas.value = listado
+
+
         }
 
     }
 
-    fun existeBaseDatos() {
+    suspend fun existeBaseDatos() {
         val dbFile = context.getDatabasePath("database-vivemurcia") // nombre de tu DB
 
         if (!dbFile.exists()) {
             cargarDatos()
-            cargarDestacadas()
         }
 
     }

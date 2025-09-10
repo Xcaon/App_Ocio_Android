@@ -16,6 +16,9 @@ import java.util.Date
 @Dao
 interface ActividadDAO {
 
+    @Query("SELECT * FROM ActividadDB where idActividad = :idActividad LIMIT 1")
+    fun getActividadById(idActividad: String): ActividadDB?
+
     @Query("SELECT * FROM ActividadDB where esFavorito = 1")
     fun getFavoritos(): List<ActividadDB>
 
@@ -39,6 +42,9 @@ interface ActividadDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(actividades: List<ActividadDB>)
+
+    @Query("UPDATE ActividadDB SET esDestacada = 1 WHERE idActividad IN (:listadoIds)")
+    fun insertAllDestacadas(listadoIds: List<String>)
 
 
     @Query("DELETE FROM ActividadDB")
@@ -85,6 +91,8 @@ interface ActividadDAO {
 
         return actividades
     }
+
+
 
 
 //    @Query("SELECT * FROM user WHERE uid IN (:userIds)")

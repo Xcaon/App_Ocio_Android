@@ -49,13 +49,15 @@ fun InicioHome(navController: NavController) {
     val actividadesTodos: State<List<Actividad>> = homeViewModel.actividadesTodas.collectAsState()
 
     LaunchedEffect(Unit) {
+        homeViewModel.existeBaseDatos()
+
         if ( listadoHorizontal.value.isEmpty() ){
-            homeViewModel.getActividadesDestacadas()
+            homeViewModel.cargarDestacadas()
         }
         if ( actividadesTodos.value.isEmpty() ){
             homeViewModel.getAllActividades()
         }
-        homeViewModel.existeBaseDatos()
+
     }
 
 
@@ -141,17 +143,7 @@ fun InicioHome(navController: NavController) {
                     text = "Novedades",
                     textAlign = TextAlign.Start
                 )
-                Text(
-                    modifier = Modifier.clickable {
-                        homeViewModel.cargarDatos()
-                        homeViewModel.cargarDestacadas()
-                    },
-                    fontWeight = FontWeight.Light,
-                    fontFamily = FontFamily(Font(R.font.plusjakartasansbold)),
-                    fontSize = 14.sp,
-                    color = Color.Gray,
-                    text = "Actualizar",
-                    textAlign = TextAlign.End)
+
             }
             HorizontalDivider(thickness = 8.dp, color = Color.Transparent)
             if (actividadesTodos.value.isNotEmpty()) {

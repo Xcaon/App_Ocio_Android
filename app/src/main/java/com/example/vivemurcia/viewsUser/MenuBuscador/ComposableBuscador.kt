@@ -2,10 +2,10 @@ package com.example.vivemurcia.viewsUser.MenuBuscador
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,7 +17,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Tune
@@ -26,8 +25,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -35,23 +32,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
-import androidx.compose.material3.SearchBarColors
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -62,18 +53,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.bumptech.glide.integration.compose.placeholder
 import com.example.vivemurcia.R
 import com.example.vivemurcia.model.clases.Actividad
+import com.example.vivemurcia.model.enums.EnumCategories
 import com.example.vivemurcia.ui.theme.colorNegroProyecto
 import com.example.vivemurcia.ui.theme.colorPrimario
 import com.example.vivemurcia.views.home.ActividadCard
-import com.example.vivemurcia.views.home.shimmerBrush
 import com.example.vivemurcia.viewsCompany.createActivity.Espaciado
 import com.example.vivemurcia.viewsUser.MenuHome.pantallaDetalle.ViewModelDetalle
 import kotlinx.coroutines.launch
@@ -97,11 +86,9 @@ fun InicioBuscador(navController: NavHostController) {
         buscadorViewModel.getAllActividades()
     }
 
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    var selectedItemRELAX by remember { mutableStateOf(false) }
-    var selectedItemAVENTURAS by remember { mutableStateOf(false) }
-    var selectedItemCOCINA by remember { mutableStateOf(false) }
-    var selectedItemARTE by remember { mutableStateOf(false) }
+    val selectedItems = remember { mutableStateMapOf<EnumCategories, Boolean>().apply {
+        EnumCategories.entries.forEach { this[it] = false }
+    } }
 
 
     val sheetState = rememberModalBottomSheetState() // Para controlar el modal
@@ -243,97 +230,33 @@ fun InicioBuscador(navController: NavHostController) {
                     HorizontalDivider(thickness = 1.dp, color = Color.Gray)
                     Espaciado(16)
                     Column(modifier = Modifier.padding(horizontal = 8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column() {
-                                Checkbox(checked = selectedItemRELAX, onCheckedChange = {
-                                    selectedItemRELAX = !selectedItemRELAX
-                                },
+
+                        EnumCategories.entries.forEach { category ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Checkbox(
+                                    checked = selectedItems[category] ?: false,
+                                    onCheckedChange = { checked ->
+                                        selectedItems[category] = checked
+                                    },
                                     colors = CheckboxDefaults.colors(
-                                        checkedColor = colorPrimario,      // Color del borde y fondo al marcar
-                                        uncheckedColor = Color.Gray,     // Color del borde al desmarcar
-                                        checkmarkColor = Color.White     // Color del tick ✓
-                                    ))
-                            }
-                            Column(modifier = Modifier.width(100.dp)) {
+                                        checkedColor = colorPrimario,
+                                        uncheckedColor = Color.Gray,
+                                        checkmarkColor = Color.White
+                                    )
+                                )
+                                Spacer(modifier = Modifier.width(16.dp))
                                 Text(
+                                    text = category.name,
                                     fontFamily = FontFamily(Font(R.font.plusjakartasansmedium)),
                                     color = colorNegroProyecto,
-                                    text = "RELAX"
+                                    modifier = Modifier.width(150.dp)
                                 )
                             }
                         }
 
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column(modifier = Modifier) {
-                                Checkbox(checked = selectedItemAVENTURAS, onCheckedChange = {
-                                    selectedItemAVENTURAS = !selectedItemAVENTURAS
-                                },
-                                    colors = CheckboxDefaults.colors(
-                                        checkedColor = colorPrimario,      // Color del borde y fondo al marcar
-                                        uncheckedColor = Color.Gray,     // Color del borde al desmarcar
-                                        checkmarkColor = Color.White     // Color del tick ✓
-                                    ))
-                            }
-                            Column(modifier = Modifier.width(100.dp)) {
-                                Text(
-                                    fontFamily = FontFamily(Font(R.font.plusjakartasansmedium)),
-                                    color = colorNegroProyecto,
-                                    text = "AVENTURAS"
-                                )
-                            }
-                        }
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column() {
-                                Checkbox(checked = selectedItemCOCINA, onCheckedChange = {
-                                    selectedItemCOCINA = !selectedItemCOCINA
-                                },
-                                    colors = CheckboxDefaults.colors(
-                                        checkedColor = colorPrimario,      // Color del borde y fondo al marcar
-                                        uncheckedColor = Color.Gray,     // Color del borde al desmarcar
-                                        checkmarkColor = Color.White     // Color del tick ✓
-                                    ))
-                            }
-                            Column(modifier = Modifier.width(100.dp)) {
-                                Text(
-                                    fontFamily = FontFamily(Font(R.font.plusjakartasansmedium)),
-                                    color = colorNegroProyecto,
-                                    text = "COCINA"
-                                )
-                            }
-                        }
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column() {
-                                Checkbox(checked = selectedItemARTE, onCheckedChange = {
-                                    selectedItemARTE = !selectedItemARTE
-                                },
-                                    colors = CheckboxDefaults.colors(
-                                        checkedColor = colorPrimario,      // Color del borde y fondo al marcar
-                                        uncheckedColor = Color.Gray,     // Color del borde al desmarcar
-                                        checkmarkColor = Color.White     // Color del tick ✓
-                                    ))
-                            }
-                            Column(modifier = Modifier.width(100.dp)) {
-                                Text(
-                                    fontFamily = FontFamily(Font(R.font.plusjakartasansmedium)),
-                                    color = colorNegroProyecto,
-                                    text = "ARTE"
-                                )
-                            }
-                        }
                         Espaciado(24)
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -351,13 +274,10 @@ fun InicioBuscador(navController: NavHostController) {
                                     scope.launch { sheetState.hide() }.invokeOnCompletion {
 
 
-                                        // Comprobamos cuales estan seleccionados y los pasamos para filtrar
-                                        var categorias : MutableList<String> = mutableListOf()
-
-                                        if (selectedItemRELAX) categorias.add("RELAX")
-                                        if (selectedItemAVENTURAS) categorias.add("AVENTURAS")
-                                        if (selectedItemCOCINA) categorias.add("COCINA")
-                                        if (selectedItemARTE) categorias.add("ARTE")
+                                        // Filtramos las categorías seleccionadas automáticamente
+                                        val categorias: List<String> = selectedItems
+                                            .filter { it.value }      // Solo los que están seleccionados
+                                            .map { it.key.name }      // Tomamos el nombre de la categoría
 
                                         buscadorViewModel.filtrarActividadesPorCategoria(categorias)
 

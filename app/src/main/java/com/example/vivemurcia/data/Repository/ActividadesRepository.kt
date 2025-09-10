@@ -1,5 +1,6 @@
 package com.example.vivemurcia.data.Repository
 
+import com.example.vivemurcia.data.room.ActividadDB
 import com.example.vivemurcia.data.room.AppDatabase
 import com.example.vivemurcia.model.clases.Actividad
 import com.example.vivemurcia.model.firebase.FireStoreModel
@@ -23,6 +24,17 @@ class ActividadesRepository @Inject constructor(
         return condicion
     }
 
+    fun getActividadById(idActividad: String): Actividad? {
+
+        val actividadObject : ActividadDB? = db.actividadDao().getActividadById(idActividad)
+
+        val listaConUnElemento : List<ActividadDB> = listOf(actividadObject!!)
+
+        val actividad = db.actividadDao().mapToActividad(listaConUnElemento)
+
+        return actividad.first()
+    }
+
     fun setFavorito(idActividad: String?, isFavValue: Int){
         db.actividadDao().setDeleteFav(idActividad!!, isFavValue)
     }
@@ -33,7 +45,7 @@ class ActividadesRepository @Inject constructor(
     }
 
     fun getAllDestacadas(): List<Actividad> {
-       val listado = db.actividadDao().mapToActividad(db.actividadDao().getAllDestacadas())
+       val listado: List<Actividad> = db.actividadDao().mapToActividad(db.actividadDao().getAllDestacadas())
         return listado
     }
 
@@ -42,8 +54,8 @@ class ActividadesRepository @Inject constructor(
     }
 
 
-    suspend fun introducirActividadesDestacadas(listado: List<Actividad>) {
-        db.actividadDao().insertAll(db.actividadDao().mapToActividadDB(listado, 1))
+    suspend fun introducirActividadesDestacadas(listadoIds: List<String>) {
+        db.actividadDao().insertAllDestacadas(listadoIds)
     }
 
 
