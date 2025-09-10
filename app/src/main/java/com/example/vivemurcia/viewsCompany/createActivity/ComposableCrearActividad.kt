@@ -1,11 +1,13 @@
 package com.example.vivemurcia.viewsCompany.createActivity
 
-import android.app.Activity
-import android.content.Intent
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
-import android.provider.MediaStore
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -66,11 +68,12 @@ import com.google.firebase.Timestamp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
 @Composable
 fun InicioCrearActividad() {
     Column(
@@ -81,15 +84,15 @@ fun InicioCrearActividad() {
             .verticalScroll(rememberScrollState())
     ) {
         // Gestionar los valores del formulario
-        var tituloServicio: MutableState<String> = remember { mutableStateOf("") }
-        var descripcionServicio: MutableState<String> = remember { mutableStateOf("") }
+        val tituloServicio: MutableState<String> = remember { mutableStateOf("") }
+        val descripcionServicio: MutableState<String> = remember { mutableStateOf("") }
 //        var fechaServicio = remember { mutableStateOf("") } // null
-        var categoriaActividad: MutableState<EnumCategories> =
+        val categoriaActividad: MutableState<EnumCategories> =
             remember { mutableStateOf(EnumCategories.AVENTURAS) }
-        var localizacionActividad: MutableState<String> = remember { mutableStateOf("") }
-        var ubicacionServicio: MutableState<String> = remember { mutableStateOf("") }
-        var tipoDeGrupo: MutableState<EnumGrupos> = remember { mutableStateOf(EnumGrupos.FAMILIAR) }
-        var ambienteActividad: MutableState<EnumAmbiente> =
+        val localizacionActividad: MutableState<String> = remember { mutableStateOf("") }
+        val ubicacionServicio: MutableState<String> = remember { mutableStateOf("") }
+        val tipoDeGrupo: MutableState<EnumGrupos> = remember { mutableStateOf(EnumGrupos.FAMILIAR) }
+        val ambienteActividad: MutableState<EnumAmbiente> =
             remember { mutableStateOf(EnumAmbiente.EXTERIOR) }
 
         // Gestion de errores
@@ -145,8 +148,12 @@ fun InicioCrearActividad() {
             tipoDeGrupo = null,
             ubicacionActividad = null
         )
+
+        val context = LocalContext.current
         // Guardar opciones del formulario
         BotonesCrearActividad {
+
+            // Declaramos la clase que enviaremos para crear la actividad
             actividadCreada = Actividad(
                 idActividad = null,
                 tituloActividad = tituloServicio.value,
@@ -161,33 +168,84 @@ fun InicioCrearActividad() {
                 uriImagen = null
             )
 
-            subirActividadStorage(creador, actividadCreada, selectedImageUri)
+            // Subimos la actividad a firebase, tanto a firestore como a firebase storage
+            subirActividadStorage(creador, actividadCreada, selectedImageUri, context)
         }
+
     }
 }
 
-fun subirActividadStorage(creador: CreaActividadViewModel, actividadCreada : Actividad, selectedImageUri : Uri?, ){
+
+fun subirActividadStorage(
+    creador: CreaActividadViewModel,
+    actividadCreada: Actividad,
+    selectedImageUri: Uri?,
+    context1: Context,
+) {
 
     CoroutineScope(Dispatchers.IO).launch {
-        var uriImagenSubida : Uri? = Uri.EMPTY
-         uriImagenSubida = creador.subirImagenUri(
-            idEmpresa = actividadCreada.idEmpresa.toString(),
-            uri = selectedImageUri!!,
-            tituloActividad = actividadCreada.tituloActividad.toString()
-        )
 
-        if ( !uriImagenSubida.equals(Uri.EMPTY) ){
-            crearActividad(creador, actividadCreada, uriImagenSubida)
+        // Comprimir la imagen
+        val imagenConvertidoByteArray = compressImage(context = context1, uri = selectedImageUri)
+
+        if (imagenConvertidoByteArray != null) {
+
+            // Subimos la imagen a FireStorage y recuperamos su uri para asignarla posteriormente
+            val uriImagenSubida = creador.subirImagenUri(
+                idEmpresa = actividadCreada.idEmpresa.toString(),
+                uri = imagenConvertidoByteArray!!,
+                tituloActividad = actividadCreada.tituloActividad.toString()
+            )
+
+            // Una vez obtenemos la uri de haber subido la actividad, creamos el objeto en firestore
+            if (uriImagenSubida != Uri.EMPTY) {
+                crearActividad(creador, actividadCreada, uriImagenSubida)
+            }
+        } else {
+            Toast.makeText(context1, "Error al comprimir la imagen, cancelado la subida", Toast.LENGTH_LONG).show()
         }
     }
 }
 
- suspend fun crearActividad(
-     creador: CreaActividadViewModel,
-     actividadCreada: Actividad,
-     uriImagenSubida: Uri
- ){
-     actividadCreada.uriImagen = uriImagenSubida
+private fun compressImage(
+    context: Context,
+    uri: Uri?,
+    maxSizeKb: Int = 200
+): ByteArray? {
+
+    try {
+        val inputStream = context.contentResolver.openInputStream(uri!!) ?: return null
+
+        val bitmap = BitmapFactory.decodeStream(inputStream)
+        inputStream.close()
+
+        var quality = 100
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream)
+
+        while (stream.size() / 1024 > maxSizeKb && quality > 10) {
+            stream.reset()
+            quality -= 5
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream)
+        }
+
+        bitmap.recycle()
+        return stream.toByteArray()
+
+    } catch (e: Exception) {
+        Toast.makeText(context, "Error al comprimir la imagen", Toast.LENGTH_LONG).show()
+    }
+
+    return null
+
+}
+
+suspend fun crearActividad(
+    creador: CreaActividadViewModel,
+    actividadCreada: Actividad,
+    uriImagenSubida: Uri
+) {
+    actividadCreada.uriImagen = uriImagenSubida
     creador.crearActividad(actividadCreada) { estadoSubido ->
         if (estadoSubido) {
             Log.i("fernando", "Se ha guardado la actividad $actividadCreada")
@@ -518,15 +576,18 @@ fun Imagen(selectedImageUri: (Uri?) -> Unit) {
     Espaciado(8)
     var imagen: Uri? by remember { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current
-    // Botón para abrir el selector de imágenes
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            imagen = result.data?.data
-            selectedImageUri(result.data?.data)
+
+
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri != null) {
+            imagen = uri
+            selectedImageUri(uri)
         }
     }
+
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -542,7 +603,9 @@ fun Imagen(selectedImageUri: (Uri?) -> Unit) {
             contentScale = ContentScale.Crop
         )
     }
+
     Espaciado()
+
     // Al dar click cargamos la imagen
     Button(
         modifier = Modifier
@@ -550,9 +613,9 @@ fun Imagen(selectedImageUri: (Uri?) -> Unit) {
             .height(50.dp),
         shape = RoundedCornerShape(corner = CornerSize(12.dp)),
         onClick = {
-            // Intent para abrir la galería
-            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            launcher.launch(intent)
+            photoPickerLauncher.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
         },
         colors = ButtonColors(
             containerColor = botonNaranja,
@@ -561,8 +624,11 @@ fun Imagen(selectedImageUri: (Uri?) -> Unit) {
             disabledContentColor = Color.Gray
         )
     ) {
+
         Text("Seleccionar imagen")
+
     }
+
     Espaciado(32)
 }
 

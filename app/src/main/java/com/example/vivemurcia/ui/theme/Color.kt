@@ -9,6 +9,7 @@ val colorSecundario = Color(0xFFB0AFAF)
 
 val colorPrimario = Color(0xFFFF7F50) // #2e3036
 
+val colorBotones = Color(0xFF4A90E2)
 
 val SoftPink = Color(0xFFFFB6B9)
 

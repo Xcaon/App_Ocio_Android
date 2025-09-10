@@ -20,12 +20,13 @@ class CreaActividadViewModel @Inject constructor
         estadoSubido(firestore.subirActividad(actividad))
     }
 
-    suspend fun subirImagenUri(idEmpresa: String, uri: Uri, tituloActividad: String) : Uri {
-            var uriImagen : Uri = storage.subirImagen(
-                idEmpresa = idEmpresa,
-                imageUri = uri,
-                tituloActividad = tituloActividad
-            )
+    suspend fun subirImagenUri(idEmpresa: String, uri: ByteArray, tituloActividad: String): Uri {
+
+        val uriImagen: Uri = storage.subirImagen(
+            idEmpresa = idEmpresa,
+            imageUri = uri,
+            tituloActividad = tituloActividad
+        )
         return uriImagen
     }
 

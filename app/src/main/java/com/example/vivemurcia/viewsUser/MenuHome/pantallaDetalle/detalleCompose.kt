@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -22,6 +23,7 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.SaveAlt
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.SaveAlt
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -54,6 +56,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.example.vivemurcia.R
 import androidx.core.net.toUri
 import com.example.vivemurcia.model.clases.Actividad
+import com.example.vivemurcia.ui.theme.colorBotones
 import com.example.vivemurcia.ui.theme.negroIconos
 import com.example.vivemurcia.viewsCompany.createActivity.Espaciado
 import com.example.vivemurcia.viewsCompany.ui.theme.botonNaranja
@@ -118,7 +121,8 @@ fun MostrarActividadDetalle(idActividad: String?, categoriaActividad: String?) {
             Text(
                 fontFamily = FontFamily(Font(R.font.notosansbold)),
                 fontWeight = FontWeight.Bold,
-                fontSize = 24.sp,
+                lineHeight = 40.sp,
+                fontSize = 32.sp,
                 text = actividadValue?.tituloActividad?.replaceFirstChar { it.uppercase() } ?: ""
             )
 
@@ -154,8 +158,9 @@ fun MostrarActividadDetalle(idActividad: String?, categoriaActividad: String?) {
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Button(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).height(50.dp),
                 colors = ButtonColors(botonNaranja, Color.White, botonNaranja, botonNaranja),
+                shape = RoundedCornerShape(8.dp),
                 onClick = {
                     val intent = Intent(
                         Intent.ACTION_VIEW,
@@ -164,24 +169,33 @@ fun MostrarActividadDetalle(idActividad: String?, categoriaActividad: String?) {
                     context.startActivity(intent)
                 }
             ) {
-                Text(text = "Cómo llegar")
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Cómo llegar")
+                    Espaciado(4)
+                    Icon(
+                        imageVector = Icons.Outlined.LocationOn,
+                        contentDescription = "Ir",
+                        tint = Color.White
+                    )
+                }
             }
 
             if (isFav) {
                 Button(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).height(50.dp),
+                    shape = RoundedCornerShape(8.dp),
                     onClick = {
                         Toast.makeText(context, "Actividad borrada", Toast.LENGTH_SHORT).show()
                         viewModelDetalle.borrarDeFavoritos(actividadValue)
                     },
                     colors = ButtonColors(
-                        containerColor = Color.Blue,
+                        containerColor = Color.Red,
                         contentColor = Color.White,
                         disabledContainerColor = Color.Gray,
                         disabledContentColor = Color.Black
                     )
                 ) {
-                    Row {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(text = "Borrar Favorito")
                         Espaciado(4)
                         Icon(
@@ -193,19 +207,20 @@ fun MostrarActividadDetalle(idActividad: String?, categoriaActividad: String?) {
                 }
             } else {
                 Button(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).height(50.dp),
                     onClick = {
                         Toast.makeText(context, "Actividad guardada", Toast.LENGTH_SHORT).show()
                         viewModelDetalle.addActividadListaFavoritos(idActividad)
                     },
+                    shape = RoundedCornerShape(8.dp),
                     colors = ButtonColors(
-                        containerColor = Color.Blue,
+                        containerColor = colorBotones,
                         contentColor = Color.White,
                         disabledContainerColor = Color.Gray,
                         disabledContentColor = Color.Black
                     )
                 ) {
-                    Row {
+                    Row (verticalAlignment = Alignment.CenterVertically) {
                         Text(text = "Guardar Favorito")
                         Espaciado(4)
                         Icon(
@@ -219,17 +234,6 @@ fun MostrarActividadDetalle(idActividad: String?, categoriaActividad: String?) {
 
         }
     }
-}
-
-fun mostrarFechaBonita(fecha: Timestamp): String {
-    // Fecha y hora
-    val timestamp: Timestamp = fecha // de Firebase
-    val calendar = Calendar.getInstance().apply {
-        time = timestamp.toDate()
-    }
-    val formato = SimpleDateFormat("d MMMM", Locale("es", "ES"))
-
-    return formato.format(calendar.time)
 }
 
 

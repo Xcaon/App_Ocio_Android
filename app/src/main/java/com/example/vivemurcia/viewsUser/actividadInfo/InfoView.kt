@@ -32,7 +32,7 @@ class InfoView : ComponentActivity() {
 
         VivemurciaTheme(isDarkTheme = isDark.value) {
             InicioComposableInfoView {
-                var intent = Intent(this, HomeView::class.java)
+                val intent = Intent(this, HomeView::class.java)
                 startActivity(intent)
             }
         }

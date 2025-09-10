@@ -127,7 +127,8 @@ class LoginView : ComponentActivity() {
     }
 
     fun pantallaInfo(context: Context, userIdToken: String) {
-        savePreferences(context, userIdToken, true)
+        savePreferences(context, userIdToken, true) // Guardamos el token en las preferencias
+
         val intent = Intent(context, InfoView::class.java)
         context.startActivity(intent)
     }

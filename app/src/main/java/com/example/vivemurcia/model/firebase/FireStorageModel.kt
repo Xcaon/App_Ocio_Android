@@ -12,37 +12,38 @@ class FireStorageModel @Inject constructor(
     private val storage: FirebaseStorage
 ) {
 
+
+
     suspend fun subirImagen(
         idEmpresa: String,
-        imageUri: Uri,
+        imageUri: ByteArray,
         tituloActividad: String
     ): Uri {
 
-        var tituloSinEspacios = normalizarTitulo(tituloActividad)
+        val tituloSinEspacios = normalizarTitulo(tituloActividad)
 
         val imageRef =
             storage.reference.child("/users/$idEmpresa/$tituloSinEspacios/imagenActividad.jpg")
 
 
-        val uploadTask = imageRef.putFile(imageUri)
+        val uploadTask = imageRef.putBytes(imageUri)
 
-        // Aprovechamos y recuperamos la url para asignarselo a la actividad
-        val downloadurl = uploadTask.continueWithTask { task ->
+        val downloadUrl = uploadTask.continueWithTask { task ->
             if (!task.isSuccessful) {
                 task.exception?.let {
                     throw it
                 }
             }
             imageRef.downloadUrl
-        }.addOnFailureListener(
-            OnFailureListener {
-                Log.e("fernando", "Error al subir la imagen")
-            }
-        ).addOnSuccessListener {
-            Log.i("fernando", "La imagen se ha subido correctamente")
+        }.addOnSuccessListener { task ->
+            // Subida completada
+            imageRef.downloadUrl
+        }.addOnFailureListener { exception ->
+            // Manejar error
+            Log.e("Upload", "Error al subir: $exception")
         }.await()
 
-        return downloadurl
+        return downloadUrl
     }
 
     // Recuperamos una imagen
@@ -82,7 +83,6 @@ class FireStorageModel @Inject constructor(
         }
         return uri
     }
-
 
 
 }
