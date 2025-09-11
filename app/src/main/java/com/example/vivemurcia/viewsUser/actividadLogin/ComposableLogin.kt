@@ -1,5 +1,6 @@
 package com.example.vivemurcia.views.login
 
+import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.Image
 
@@ -28,14 +29,15 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.vivemurcia.R
 import com.example.vivemurcia.ui.theme.colorPrimario
-
+import com.example.vivemurcia.viewsUser.actividadLogin.LoginViewModel
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
 
 
 @Composable
-fun InitLogin(onButtonClicked: () -> Unit) {
-
+fun InitLogin(signInIntent: (Intent) -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -47,27 +49,26 @@ fun InitLogin(onButtonClicked: () -> Unit) {
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
-        Contenido(onButtonClicked)
-
+        Contenido(signInIntent)
     }
 }
 
 @Composable
-fun Contenido(onButtonClicked: () -> Unit) {
+fun Contenido(signInIntent: (Intent) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal =  16.dp, vertical = 48.dp),
+            .padding(horizontal = 16.dp, vertical = 48.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        Box ( modifier = Modifier.weight(1f)) {
+        Box(modifier = Modifier.weight(1f)) {
             TitleText()
         }
-        Box ( modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-            InicioSesionElementos(onButtonClicked)
+        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+            InicioSesionElementos(signInIntent)
         }
-        Box ( modifier = Modifier.weight(1f)) {
+        Box(modifier = Modifier.weight(1f)) {
 
         }
     }
@@ -94,7 +95,9 @@ fun TitleText() {
 }
 
 @Composable
-fun InicioSesionElementos(onButtonClicked: () -> Unit) {
+fun InicioSesionElementos(signInIntent: (Intent) -> Unit) {
+    val loginViewModel = hiltViewModel<LoginViewModel>()
+
     Column(
         modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -106,7 +109,11 @@ fun InicioSesionElementos(onButtonClicked: () -> Unit) {
         )
 
         Button(
-            onClick = onButtonClicked,
+            onClick = {
+                loginViewModel.initGoogleSignInClient()
+                signInIntent(loginViewModel.getSignInIntent())
+
+            },
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth()

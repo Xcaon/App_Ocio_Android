@@ -47,6 +47,9 @@ android {
 
 dependencies {
 
+    implementation("com.github.LottieFiles:dotlottie-android:0.5.0")
+    implementation("com.airbnb.android:lottie-compose:6.0.1")
+
     val roomVersion = "2.7.2"
 
     // Room Runtime

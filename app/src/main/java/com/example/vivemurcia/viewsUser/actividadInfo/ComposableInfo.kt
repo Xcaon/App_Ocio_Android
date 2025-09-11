@@ -16,7 +16,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -45,24 +48,31 @@ import com.example.vivemurcia.ui.theme.fondoPantalla
 import com.example.vivemurcia.ui.theme.fondoPasosInfo
 import com.example.vivemurcia.ui.theme.textoNaranja
 
+
+
+
+
 @Composable
 fun InicioComposableInfoView(onclick: () -> Unit) {
     Box(
         Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 64.dp)
             .background(fondoPantalla),
         contentAlignment = Alignment.Center
     ) {
         Contenido(onclick)
     }
+
+
+
 }
 
 
 @Composable
 fun Contenido(onclick: () -> Unit) {
 
-    Column() {
+
+    Column(modifier = Modifier.fillMaxSize().padding(12.dp))  {
         Box(
             Modifier
                 .weight(1.2f)
@@ -83,8 +93,7 @@ fun Contenido(onclick: () -> Unit) {
                     "¡Personaliza tus notificaciones!",
                     fontFamily = FontFamily(Font(R.font.notosansbold)),
                     color = colorNegroProyecto,
-                    fontSize = 22.sp,
-                    maxLines = 1
+                    fontSize = 16.sp
                 )
                 Text(
                     "Aprende a seguir tus locales y actividades favoritas",

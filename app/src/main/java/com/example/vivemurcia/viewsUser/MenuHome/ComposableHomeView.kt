@@ -49,7 +49,6 @@ fun InicioHome(navController: NavController) {
     val actividadesTodos: State<List<Actividad>> = homeViewModel.actividadesTodas.collectAsState()
 
     LaunchedEffect(Unit) {
-        homeViewModel.existeBaseDatos()
 
         if ( listadoHorizontal.value.isEmpty() ){
             homeViewModel.cargarDestacadas()
@@ -59,8 +58,6 @@ fun InicioHome(navController: NavController) {
         }
 
     }
-
-
 
     @Composable
     fun Header() {

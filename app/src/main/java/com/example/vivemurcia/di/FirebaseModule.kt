@@ -6,6 +6,7 @@ import androidx.room.Room
 import com.example.vivemurcia.data.room.AppDatabase
 import com.example.vivemurcia.model.firebase.FireStorageModel
 import com.example.vivemurcia.model.firebase.FireStoreModel
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
@@ -19,6 +20,11 @@ import javax.inject.Singleton
  @InstallIn(SingletonComponent::class)
 object FirebaseModule {
 
+    @Provides
+    @Singleton
+    fun provideauth(): FirebaseAuth {
+        return FirebaseAuth.getInstance()
+    }
 
     @Provides
     @Singleton

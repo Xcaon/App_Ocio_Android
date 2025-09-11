@@ -1,5 +1,5 @@
 [versions]
-agp = "8.11.1"
+agp = "8.11.2"
 coilCompose = "2.4.0"
 compiler = "4.16.0"
 compose = "1.0.0-beta01"
@@ -29,7 +29,7 @@ navigationUiKtx = "2.6.0"
 googleServices = "4.4.2"
 hilt = "2.57.1"
 ksp = "2.0.21-1.0.27"
-auth = "21.3.0"
+auth = "21.4.0"
 
 [libraries]
 

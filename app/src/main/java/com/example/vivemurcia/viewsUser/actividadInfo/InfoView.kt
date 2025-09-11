@@ -14,29 +14,23 @@ import com.example.vivemurcia.ui.theme.VivemurciaTheme
 import com.example.vivemurcia.views.bottomBar.MyApp
 import com.example.vivemurcia.views.home.HomeView
 import com.example.vivemurcia.views.info.InicioComposableInfoView
+import com.example.vivemurcia.viewsUser.PreHomeCargador.PreHomeCargadorActivity
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class InfoView : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            ViveMurciaAppInfo()
-        }
-    }
-
-    @Composable
-    fun ViveMurciaAppInfo() {
-
-        val themeViewModel : ThemeViewModel = hiltViewModel<ThemeViewModel>()
-        val isDark = themeViewModel.isDarkTheme.collectAsState()
-
-        VivemurciaTheme(isDarkTheme = isDark.value) {
             InicioComposableInfoView {
-                val intent = Intent(this, HomeView::class.java)
+                val intent = Intent(this, PreHomeCargadorActivity::class.java)
                 startActivity(intent)
             }
         }
     }
+
+
 
 }
 

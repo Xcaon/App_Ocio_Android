@@ -2,13 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-
-    <!--    Inferior a 13 -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <!--  Para Android superior a 13  -->
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- Inferior a 13 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- Para Android superior a 13 -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-
 
     <application
         android:name=".data.firebase.MyApplication"
@@ -22,12 +18,18 @@
         android:theme="@style/Theme.Vivemurcia"
         tools:targetApi="31">
         <activity
+            android:name=".viewsUser.PreHomeCargador.PreHomeCargadorActivity"
+            android:exported="false"
+            android:label="@string/title_activity_pre_home_cargador"
+            android:theme="@style/Theme.Vivemurcia" >
+
+        </activity>
+
+        <activity
             android:name=".viewsCompany.createActivity.CrearActividad"
             android:exported="false"
             android:label="@string/title_activity_create"
-            android:theme="@style/Theme.Vivemurcia">
-
-        </activity>
+            android:theme="@style/Theme.Vivemurcia"></activity>
         <activity
             android:name=".viewsUser.actividadInfo.InfoView"
             android:exported="false"
@@ -38,18 +40,18 @@
             android:exported="true"
             android:label="@string/title_activity_home_view"
             android:theme="@style/Theme.Vivemurcia">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".views.login.LoginView"
-            android:exported="false"
+            android:exported="true"
             android:theme="@style/Theme.Vivemurcia">
-
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

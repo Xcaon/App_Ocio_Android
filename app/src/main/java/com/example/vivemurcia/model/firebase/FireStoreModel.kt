@@ -20,6 +20,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -76,42 +77,33 @@ class FireStoreModel @Inject constructor(
 
     }
 
+    // Esta funciona nos devuelve todas las actividades de firebase, para cargarlo en room
+    suspend fun getAllActividades() : List<Actividad> {
 
-    fun getActividadesRealtime(limit: Long): Flow<List<Actividad>> = callbackFlow {
-        val listener = firestore.collection(COLLECTION_ACTIVIDADES)
-            .orderBy("fechaHoraActividad", Query.Direction.DESCENDING)
-            .limit(limit)
-            .addSnapshotListener { snapshot, error ->
-                if (error != null) {
-                    close(error) // cierra el flow en caso de error
-                    return@addSnapshotListener
-                }
-                Log.d("fernando", "cargo datos")
+        return try {
+            val snapshot = firestore
+                .collection(COLLECTION_ACTIVIDADES)
+                .orderBy("fechaHoraActividad", Query.Direction.DESCENDING)
+                .get()
+                .await() // espera hasta que llegue el snapshot
 
-                val docs = snapshot?.documents ?: emptyList()
+            val listadoActividades = snapshot.documents.map { doc ->
+                val response = doc.toObject(ActividadResponse::class.java)!!
+                val actividad = response.toDomain().apply { idActividad = doc.id }
 
-                // Lanzamos una corrutina para descargar imágenes en paralelo
-                try {
-                    // coroutineScope dentro de callbackFlow
-                    val actividadesConImagenes = runBlocking {
-                        coroutineScope {
-                            docs.map { doc ->
-                                async {
-                                    val response = doc.toObject(ActividadResponse::class.java)!!
-                                    val actividad = response.toDomain().apply { idActividad = doc.id }
-                                    val imagenUri = storage.getImagen(actividad.tituloActividad, actividad.idEmpresa)
-                                    actividad.apply { uriImagen = imagenUri }
-                                }
-                            }.awaitAll()
-                        }
-                    }
-                    trySend(actividadesConImagenes) // emitimos la lista actualizada
-                } catch (e: Exception) {
-                    close(e)
-                }
+                // Obtener la imagen de storage
+                val imagenUri = storage.getImagen(
+                    actividad.tituloActividad,
+                    actividad.idEmpresa
+                )
+                actividad.apply { uriImagen = imagenUri }
             }
+            listadoActividades
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList() // devolvemos lista vacía en caso de error
+        }
 
-        awaitClose { listener.remove() } // removemos el listener al cancelar el flow
     }
 
     // Subir actividad
@@ -183,8 +175,6 @@ class FireStoreModel @Inject constructor(
             emptyList() // Return an empty list if cache is empty
         }
     }
-
-
 
 
 }

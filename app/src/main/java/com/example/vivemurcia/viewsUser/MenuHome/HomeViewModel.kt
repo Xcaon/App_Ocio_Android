@@ -39,16 +39,6 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    suspend fun cargarDatos() {
-        viewModelScope.launch(Dispatchers.IO) {
-            fireStoreModel.getActividadesRealtime(100).collect { listadoActividades ->
-                db.actividadDao()
-                    .insertAll(db.actividadDao().mapToActividadDB(listadoActividades, 0))
-                _actividadesTodas.value =
-                    db.actividadDao().mapToActividad(db.actividadDao().getAll())
-            }
-        }
-    }
 
     fun cargarDestacadas() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -70,16 +60,6 @@ class HomeViewModel @Inject constructor(
         }
 
     }
-
-    suspend fun existeBaseDatos() {
-        val dbFile = context.getDatabasePath("database-vivemurcia") // nombre de tu DB
-
-        if (!dbFile.exists()) {
-            cargarDatos()
-        }
-
-    }
-
 
 }
 
